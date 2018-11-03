@@ -35,7 +35,7 @@
             />
 
         <EditText
-            android:id="@+id/edit_alram"
+            android:id="@+id/edit_alarm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="클릭해서 알람을 설정해주세요."

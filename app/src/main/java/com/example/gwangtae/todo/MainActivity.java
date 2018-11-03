@@ -90,21 +90,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode == 1){
-            Toast.makeText(this, "record에서 빠져 나감", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     public void OnClick(View view) {
         int id = view.getId();
 
-        if(id == R.id.add_btn){
+        if(id == R.id.btn_add){
             Intent record = new Intent(this, edit_record.class);
-            startActivityForResult(record, 1);
+            startActivity(record);
         }
     }
 }
