@@ -1,5 +1,6 @@
 package com.example.gwangtae.todo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -85,5 +88,23 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == 1){
+            Toast.makeText(this, "record에서 빠져 나감", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void OnClick(View view) {
+        int id = view.getId();
+
+        if(id == R.id.add_btn){
+            Intent record = new Intent(this, edit_record.class);
+            startActivityForResult(record, 1);
+        }
     }
 }
