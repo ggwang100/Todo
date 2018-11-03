@@ -13,7 +13,7 @@ import com.example.gwangtae.todo.R;
 public class DBAdapter extends CursorAdapter {
 
     public DBAdapter(Context context, Cursor c) {
-        super(context, c);
+        super(context, c, 0);
     }
 
     @Override

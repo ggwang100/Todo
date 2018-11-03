@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import DB.DBAdapter;
 import DB.DBHelper;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity
     DBHelper dbHelper;
     SQLiteDatabase sqLiteDatabase;
     Cursor cursor;
+    DBAdapter dbAdapter;
 
     String title, content, date;
     ListView list;
@@ -45,7 +47,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-//        selectDB();
+        list = (ListView) findViewById(R.id.list);
+        selectDB();
+        dbAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -110,27 +114,39 @@ public class MainActivity extends AppCompatActivity
 
         if(id == R.id.btn_add){
             Intent record = new Intent(this, edit_record.class);
-            startActivity(record);
+            startActivityForResult(record, 1000);
         }
     }
 
     public void selectDB(){
+
         dbHelper = new DBHelper(this);
         sqLiteDatabase = dbHelper.getWritableDatabase();
 
-        list = (ListView) findViewById(R.id.list);
         String SQL = "SELECT * FROM TODO";
-
         cursor = sqLiteDatabase.rawQuery(SQL, null);
-        while(cursor.getCount() > 0){
-            startManagingCursor(cursor);
-            DBAdapter dbAdapter = new DBAdapter(this, cursor);
-            list.setAdapter(dbAdapter);
-        }
+
+        startManagingCursor(cursor);
+        dbAdapter = new DBAdapter(this, cursor);
+        list.setAdapter(dbAdapter);
     }
 
+    // 2018-11-04 추가
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 1000 && resultCode == 1){
+            String TITLE = data.getStringExtra("TITLE");
+            String CONTENT = data.getStringExtra("CONTENT");
+            String ALARM = data.getStringExtra("ALARM");
+
+            Toast.makeText(this, ALARM, Toast.LENGTH_SHORT).show();
+
+            dbHelper.onInsert(TITLE, CONTENT, ALARM);
+
+            list.setAdapter(dbAdapter);
+            dbAdapter.changeCursor(cursor);
+        }
     }
 }

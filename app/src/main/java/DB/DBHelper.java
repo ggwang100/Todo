@@ -14,20 +14,19 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String memoSQL = "CREATE TABLE TODO (" +
-                "_ID INT PRIMARY KEY AUTOINCREMENT," +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "TITLE TEXT NOT NULL," +
                 "CONTENT TEXT," +
                 "CREATE_DATE DATE NOT NULL," +
-                "TIME TEXT NOT NULL," +
                 "ALARM TEXT" +
                 ")";
         sqLiteDatabase.execSQL(memoSQL);
 }
 
-    public void onInsert(String title, String content){
+    public void onInsert(String TITLE, String CONTENT, String ALARM){
         SQLiteDatabase db = getWritableDatabase();
 
-        String INSERT_TABLE = "insert into TODO values (null, '" + title + "', '" + content + "', date('now'))";
+        String INSERT_TABLE = "INSERT INTO TODO VALUES(NULL, '"+ TITLE + "', '" + CONTENT +"', DATE('NOW'), '" + ALARM + "')";
         Log.d("insert", "onInsert: " + INSERT_TABLE);
         db.execSQL(INSERT_TABLE);
     }
@@ -35,14 +34,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onDelete(int id){
         SQLiteDatabase db = getWritableDatabase();
 
-        String sql = "delete from TODO where _id=" + id;
+        String sql = "";
         db.execSQL(sql);
     }
 
     public void onUpdate(int id, String title, String content){
         SQLiteDatabase db = getWritableDatabase();
 
-        String INSERT_TABLE = "update TODO set title='" + title + "', content='" + content + "' where _id = " + id;
+        String INSERT_TABLE = "";
         db.execSQL(INSERT_TABLE);
     }
 

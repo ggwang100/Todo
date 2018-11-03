@@ -16,7 +16,7 @@ public class read extends AppCompatActivity{
     public void onClick(View view) {
         int id = view.getId();
 
-        if (id == R.id.btn_update) { // 추가 버튼
+        if (id == R.id.btn_update) { // 수정 버튼
 
             Intent intent = new Intent(this, edit_record.class);
             startActivity(intent);
