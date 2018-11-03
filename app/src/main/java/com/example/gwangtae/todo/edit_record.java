@@ -53,7 +53,7 @@ public class edit_record extends AppCompatActivity {
 
         if (id == R.id.bottom) { // 추가 버튼
              Intent intent = new Intent(this, MainActivity.class);
-              startActivity(intent);
+             startActivity(intent);
         }
     }
 }

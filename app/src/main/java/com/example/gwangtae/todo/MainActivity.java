@@ -1,6 +1,8 @@
 package com.example.gwangtae.todo;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,15 +13,26 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ListView;
+
+import DB.DBAdapter;
+import DB.DBHelper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    DBHelper dbHelper;
+    SQLiteDatabase sqLiteDatabase;
+    Cursor cursor;
+
+    String title, content, date;
+    ListView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -31,6 +44,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+//        selectDB();
     }
 
     @Override
@@ -97,5 +112,25 @@ public class MainActivity extends AppCompatActivity
             Intent record = new Intent(this, edit_record.class);
             startActivity(record);
         }
+    }
+
+    public void selectDB(){
+        dbHelper = new DBHelper(this);
+        sqLiteDatabase = dbHelper.getWritableDatabase();
+
+        list = (ListView) findViewById(R.id.list);
+        String SQL = "SELECT * FROM TODO";
+
+        cursor = sqLiteDatabase.rawQuery(SQL, null);
+        while(cursor.getCount() > 0){
+            startManagingCursor(cursor);
+            DBAdapter dbAdapter = new DBAdapter(this, cursor);
+            list.setAdapter(dbAdapter);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

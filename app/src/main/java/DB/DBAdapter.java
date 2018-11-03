@@ -31,8 +31,8 @@ public class DBAdapter extends CursorAdapter {
         final TextView content = (TextView) view.findViewById(R.id.text_content);
         final TextView date = (TextView) view.findViewById(R.id.text_date);
 
-        title.setText("제목 : " + cursor.getString(cursor.getColumnIndex("title")));
-        content.setText("내용 : " + cursor.getString(cursor.getColumnIndex("content")));
-        date.setText("생성 날짜 : " + cursor.getString(cursor.getColumnIndex("create_memo")));
+        title.setText("제목 : " + cursor.getString(cursor.getColumnIndex("TITLE")));
+        content.setText("내용 : " + cursor.getString(cursor.getColumnIndex("CONTENT")));
+        date.setText("생성 날짜 : " + cursor.getString(cursor.getColumnIndex("CREATE_DATE")));
     }
 }
