@@ -1,5 +1,6 @@
 package com.example.gwangtae.todo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -31,6 +32,8 @@ public class edit_record extends AppCompatActivity {
 
         if (id == R.id.bottom) { // 추가 버튼
 
+             Intent intent = new Intent(this, MainActivity.class);
+              startActivity(intent);
         }
 
 
