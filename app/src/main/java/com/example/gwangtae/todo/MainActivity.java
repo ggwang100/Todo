@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
         list = (ListView) findViewById(R.id.list);
         selectDB();
         dbAdapter.notifyDataSetChanged();
+        dbAdapter.changeCursor(cursor);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity
 
         if(id == R.id.btn_add){
             Intent record = new Intent(this, edit_record.class);
+            record.putExtra("MODE", "READ");
             startActivityForResult(record, 1000);
         }
     }
@@ -169,6 +171,11 @@ public class MainActivity extends AppCompatActivity
 
             dbHelper.onDelete(Integer.parseInt(ID));
 
+            list.setAdapter(dbAdapter);
+            dbAdapter.changeCursor(cursor);
+        }
+
+        if(resultCode == 10){
             list.setAdapter(dbAdapter);
             dbAdapter.changeCursor(cursor);
         }

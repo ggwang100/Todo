@@ -39,11 +39,11 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(sql);
     }
 
-    public void onUpdate(int id, String title, String content){
+    public void onUpdate(int id, String TITLE, String CONTENT, String ALARM){
         SQLiteDatabase db = getWritableDatabase();
 
-        String INSERT_TABLE = "";
-        db.execSQL(INSERT_TABLE);
+        String sql = "UPDATE TODO SET TITLE = '" + TITLE  + "', CONTENT = '" + CONTENT + "', ALARM = '" + ALARM + "' WHERE _id = " + id;
+        db.execSQL(sql);
     }
 
     @Override

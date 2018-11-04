@@ -61,6 +61,17 @@
             android:background="#00ff0000"
             />
 
+        <Button
+            android:id="@+id/btn_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="수정"
+            android:onClick="onClick"
+            android:background="#00ff0000"
+            />
+
     </RelativeLayout>
 
 </LinearLayout>
