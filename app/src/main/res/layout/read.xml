@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/Eit"
+        android:id="@+id/text_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="제목"
@@ -14,24 +14,36 @@
         android:inputType="textPersonName"/>
 
     <TextView
+        android:id="@+id/text_content"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:text="내용"
+        android:layout_marginTop="10dp"
         android:textSize="20sp"
         android:inputType="textPersonName"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/text_date"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:gravity="right"
-            android:text="알람"/>
+            android:text="작성 날짜"
+            />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/text_alarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="알람"
+            android:layout_below="@id/text_date"
+            />
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -49,6 +61,7 @@
             android:layout_marginStart="90dp"
             android:layout_marginBottom="0dp"
             android:background="#00ff0000"
+            android:onClick="onClick"
             android:text="수정" />
 
         <Button
@@ -60,6 +73,7 @@
             android:layout_marginBottom="0dp"
             android:layout_toRightOf="@id/btn_update"
             android:background="#00ff0000"
+            android:onClick="onClick"
             android:text="삭제" />
 
     </RelativeLayout>

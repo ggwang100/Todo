@@ -26,15 +26,16 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onInsert(String TITLE, String CONTENT, String ALARM){
         SQLiteDatabase db = getWritableDatabase();
 
-        String INSERT_TABLE = "INSERT INTO TODO VALUES(NULL, '"+ TITLE + "', '" + CONTENT +"', DATE('NOW'), '" + ALARM + "')";
-        Log.d("insert", "onInsert: " + INSERT_TABLE);
-        db.execSQL(INSERT_TABLE);
+        String sql = "INSERT INTO TODO VALUES(NULL, '"+ TITLE + "', '" + CONTENT +"', DATE('NOW'), '" + ALARM + "')";
+        Log.d("insert", "onInsert: " + sql);
+        db.execSQL(sql);
     }
 
     public void onDelete(int id){
         SQLiteDatabase db = getWritableDatabase();
 
-        String sql = "";
+        String sql = "DELETE FROM TODO WHERE _id=" + id;
+        Log.d("delete", "ondelete: " + sql);
         db.execSQL(sql);
     }
 

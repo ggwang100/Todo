@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -50,6 +51,20 @@ public class MainActivity extends AppCompatActivity
         list = (ListView) findViewById(R.id.list);
         selectDB();
         dbAdapter.notifyDataSetChanged();
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                cursor.moveToPosition(position);
+                Intent READ = new Intent(getApplicationContext(), read.class);
+                READ.putExtra("ID", cursor.getString(cursor.getColumnIndex("_id")));
+                READ.putExtra("TITLE", cursor.getString(cursor.getColumnIndex("TITLE")));
+                READ.putExtra("CONTENT", cursor.getString(cursor.getColumnIndex("CONTENT")));
+                READ.putExtra("CREATE_DATE", cursor.getString(cursor.getColumnIndex("CREATE_DATE")));
+                READ.putExtra("ALARM", cursor.getString(cursor.getColumnIndex("ALARM")));
+                startActivityForResult(READ, 1000);
+            }
+        });
     }
 
     @Override
@@ -144,6 +159,15 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, ALARM, Toast.LENGTH_SHORT).show();
 
             dbHelper.onInsert(TITLE, CONTENT, ALARM);
+
+            list.setAdapter(dbAdapter);
+            dbAdapter.changeCursor(cursor);
+        }
+
+        if(requestCode == 1000 && resultCode == 2){
+            String ID = data.getStringExtra("ID");
+
+            dbHelper.onDelete(Integer.parseInt(ID));
 
             list.setAdapter(dbAdapter);
             dbAdapter.changeCursor(cursor);
