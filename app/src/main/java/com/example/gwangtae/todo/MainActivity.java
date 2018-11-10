@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import DB.DBAdapter;
 import DB.DBHelper;
+import Service.MyService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -76,6 +77,10 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+
+        Intent Service = new Intent(this, MyService.class);
+        Toast.makeText(this, "서비스 시작", Toast.LENGTH_SHORT).show();
+        startService(Service);
     }
 
     @Override

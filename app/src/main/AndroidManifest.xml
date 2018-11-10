@@ -3,6 +3,8 @@
     package="com.example.gwangtae.todo">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -21,18 +23,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".edit_record"></activity>
+        <activity android:name=".read"></activity>
 
-        <activity android:name=".edit_record"> </activity>
-        <activity android:name=".read"> </activity>
         <receiver
             android:name="Service.Broadcast"
             android:enabled="true"
             android:exported="false"
-            android:label="STARTReceiver">
+            android:label="RestartService">
             <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_RESTARTED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name="Service.MyService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>
