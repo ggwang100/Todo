@@ -1,22 +1,29 @@
 package Service;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
-import com.example.gwangtae.todo.MainActivity;
+import java.util.Calendar;
+
+import DB.DBHelper;
 
 public class MyService extends Service {
 
     NotificationManager Notifi_M;
     myStartceHandler handler;
+
+    DBHelper helper;
+    SQLiteDatabase sqLiteDatabase;
+
+    int year, month, day;
 
     public MyService() {
     }
@@ -30,6 +37,10 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        helper = new DBHelper(getApplicationContext());
+        sqLiteDatabase = helper.getWritableDatabase();
+
         Notifi_M = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         handler = new myStartceHandler();
         mThread thread = new mThread(handler);
@@ -46,6 +57,16 @@ public class MyService extends Service {
     class myStartceHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
+            year = Calendar.getInstance().get(Calendar.YEAR);
+            month = Calendar.getInstance().get(Calendar.MONTH);
+            day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+
+            String new_date = String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day);
+
+            Log.d("DATE", "handleMessage: " + new_date);
+
+            // 날짜 비교후 일치하면 알람 발생
+
 //            Intent intent = new Intent(MyService.this, MainActivity.class);
 //            PendingIntent P = PendingIntent.getActivity(MyService.this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 //
