@@ -35,12 +35,21 @@
             />
 
         <TextView
-            android:id="@+id/text_alarm"
+            android:id="@+id/text_alarm_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:text="알람"
+            android:text="알람 날짜"
             android:layout_below="@id/text_date"
+            />
+
+        <TextView
+            android:id="@+id/text_alarm_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="알람 시간"
+            android:layout_below="@id/text_alarm_date"
             />
 
     </RelativeLayout>

@@ -63,7 +63,8 @@ public class MainActivity extends AppCompatActivity
                 READ.putExtra("TITLE", cursor.getString(cursor.getColumnIndex("TITLE")));
                 READ.putExtra("CONTENT", cursor.getString(cursor.getColumnIndex("CONTENT")));
                 READ.putExtra("CREATE_DATE", cursor.getString(cursor.getColumnIndex("CREATE_DATE")));
-                READ.putExtra("ALARM", cursor.getString(cursor.getColumnIndex("ALARM")));
+                READ.putExtra("ALARM_DATE", cursor.getString(cursor.getColumnIndex("ALARM_DATE")));
+                READ.putExtra("ALARM_TIME", cursor.getString(cursor.getColumnIndex("ALARM_TIME")));
                 startActivityForResult(READ, 1000);
             }
         });
@@ -161,11 +162,10 @@ public class MainActivity extends AppCompatActivity
         if(requestCode == 1000 && resultCode == 1){
             String TITLE = data.getStringExtra("TITLE");
             String CONTENT = data.getStringExtra("CONTENT");
-            String ALARM = data.getStringExtra("ALARM");
+            String ALARM_DATE = data.getStringExtra("ALARM_DATE");
+            String ALARM_TIME = data.getStringExtra("ALARM_TIME");
 
-            Toast.makeText(this, ALARM, Toast.LENGTH_SHORT).show();
-
-            dbHelper.onInsert(TITLE, CONTENT, ALARM);
+            dbHelper.onInsert(TITLE, CONTENT, ALARM_DATE, ALARM_TIME);
 
             list.setAdapter(dbAdapter);
             dbAdapter.changeCursor(cursor);
