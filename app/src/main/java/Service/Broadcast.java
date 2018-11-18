@@ -13,6 +13,20 @@ public class Broadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        //가져오는것
+        String get_your_string = intent.getExtras().getString("extra");
+
+        Log.e("What is the key?", get_your_string);
+
+        //서비스 (소리)
+        Intent service_intent = new Intent(context, MyService.class);
+
+        //pass the extra string from Main Activity to the Ringtone Playing Service
+        service_intent.putExtra("extra", get_your_string);
+
+        //시작시 서비스실행
+        context.startService(service_intent);
+
         // 서비스 종료시 다시 부활하게 만듬
         if(intent.getAction().equals("android.intent.action.PACKAGE_RESTARTED")){
 
