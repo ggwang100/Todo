@@ -33,7 +33,7 @@ public class read extends AppCompatActivity{
         TITLE.setText("제목 : " + data.getStringExtra("TITLE"));
         CONTENT.setText(data.getStringExtra("CONTENT"));
         ALARM_DATE.setText("알람 날짜 : " + data.getStringExtra("ALARM_DATE"));
-        ALARM_TIME.setText("시간 : : " + data.getStringExtra("ALARM_TIME"));
+        ALARM_TIME.setText("시간 : " + data.getStringExtra("ALARM_TIME"));
         CREATE_DATE.setText("작성 날짜 : " + data.getStringExtra("CREATE_DATE"));
     }
 
