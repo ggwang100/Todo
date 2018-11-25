@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent Service = new Intent(this, MyService.class);
+        startService(Service);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -78,10 +81,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-
-        Intent Service = new Intent(this, MyService.class);
-        Toast.makeText(this, "서비스 시작", Toast.LENGTH_SHORT).show();
-        startService(Service);
     }
 
     @Override
