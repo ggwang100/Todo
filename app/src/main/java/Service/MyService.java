@@ -196,7 +196,6 @@ public class MyService extends Service {
                     media_song.start();
                 }
             } catch (Exception e){
-                Log.e("handleMessage: ", e);
             }
         }
     }

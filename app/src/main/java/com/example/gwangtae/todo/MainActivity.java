@@ -1,8 +1,10 @@
 package com.example.gwangtae.todo;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -10,12 +12,24 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import DB.DBAdapter;
 import DB.DBHelper;
@@ -24,21 +38,22 @@ import Service.MyService;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    DBHelper dbHelper;
-    SQLiteDatabase sqLiteDatabase;
-    Cursor cursor;
-    DBAdapter dbAdapter;
-
     String title, content, date;
     ListView list;
+
+    // 방 목록
+    String mJsonString;
+    private static String TAG = "TODO";
+
+    String NO, TITLE, CONTENT, CREATE_DATE, ALARM_DATE, ALARM_TIME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent Service = new Intent(this, MyService.class);
-        startService(Service);
+//        Intent Service = new Intent(this, MyService.class);
+//        startService(Service);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -52,23 +67,15 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        SelectTask selectTask = new SelectTask();
+        selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select.php");
+
         list = (ListView) findViewById(R.id.list);
-        selectDB();
-        dbAdapter.notifyDataSetChanged();
-        dbAdapter.changeCursor(cursor);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                cursor.moveToPosition(position);
-                Intent READ = new Intent(getApplicationContext(), read.class);
-                READ.putExtra("ID", cursor.getString(cursor.getColumnIndex("_id")));
-                READ.putExtra("TITLE", cursor.getString(cursor.getColumnIndex("TITLE")));
-                READ.putExtra("CONTENT", cursor.getString(cursor.getColumnIndex("CONTENT")));
-                READ.putExtra("CREATE_DATE", cursor.getString(cursor.getColumnIndex("CREATE_DATE")));
-                READ.putExtra("ALARM_DATE", cursor.getString(cursor.getColumnIndex("ALARM_DATE")));
-                READ.putExtra("ALARM_TIME", cursor.getString(cursor.getColumnIndex("ALARM_TIME")));
-                startActivityForResult(READ, 1000);
+
             }
         });
     }
@@ -133,55 +140,139 @@ public class MainActivity extends AppCompatActivity
     public void OnClick(View view) {
         int id = view.getId();
 
-        if(id == R.id.btn_add){
+        if (id == R.id.btn_add) {
             Intent record = new Intent(this, edit_record.class);
             record.putExtra("MODE", "READ");
             startActivityForResult(record, 1000);
         }
     }
 
-    public void selectDB(){
+    private class SelectTask extends AsyncTask<String, Void, String>{
+        ProgressDialog progressDialog;
+        String errorString = null;
 
-        dbHelper = new DBHelper(this);
-        sqLiteDatabase = dbHelper.getWritableDatabase();
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
-        String SQL = "SELECT * FROM TODO";
-        cursor = sqLiteDatabase.rawQuery(SQL, null);
+            progressDialog = ProgressDialog.show(MainActivity.this,
+                    "Please Wait", null, true, true);
+        }
 
-        startManagingCursor(cursor);
-        dbAdapter = new DBAdapter(this, cursor);
-        list.setAdapter(dbAdapter);
+        @Override
+        protected String doInBackground(String... params) {
+            String serverURL = params[0];
+            // String data = "id=" + params[1];
+
+            try {
+                URL url = new URL(serverURL);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+                httpURLConnection.setReadTimeout(5000);
+                httpURLConnection.setConnectTimeout(5000);
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoInput(true);
+                httpURLConnection.connect();
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                // outputStream.write(data.getBytes("UTF-8"));
+                outputStream.flush();
+                outputStream.close();
+
+                int responseStatusCode = httpURLConnection.getResponseCode();
+                Log.d(TAG, "response code - " + responseStatusCode);
+
+                InputStream inputStream;
+                if(responseStatusCode == HttpURLConnection.HTTP_OK) {
+                    inputStream = httpURLConnection.getInputStream();
+                }
+                else{
+                    inputStream = httpURLConnection.getErrorStream();
+                }
+
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                StringBuilder sb = new StringBuilder();
+                String line;
+
+                while((line = bufferedReader.readLine()) != null){
+                    sb.append(line);
+                }
+                bufferedReader.close();
+
+                return sb.toString().trim();
+
+            } catch (Exception e) {
+                Log.d(TAG, "GetData : Error ", e);
+                errorString = e.toString();
+
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            progressDialog.dismiss();
+
+            if (result == null){
+
+                Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, errorString);
+            }
+            else {
+                mJsonString = result;
+                Log.d("succ", mJsonString);
+                showResult();
+            }
+        }
     }
 
-    // 2018-11-04 추가
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void showResult(){
 
-        if(requestCode == 1000 && resultCode == 1){
-            String TITLE = data.getStringExtra("TITLE");
-            String CONTENT = data.getStringExtra("CONTENT");
-            String ALARM_DATE = data.getStringExtra("ALARM_DATE");
-            String ALARM_TIME = data.getStringExtra("ALARM_TIME");
+        String TAG_JSON="RESULT";
+        String TAG_NO = "NO";
+        String TAG_TITLE = "TITLE";
+        String TAG_CONTENT = "CONTENT";
+        String TAG_CREATE_DATE = "CREATE_DATE";
+        String TAG_ALARM_DATE = "ALARM_DATE";
+        String TAG_ALARM_TIME = "ALARM_TIME";
 
-            dbHelper.onInsert(TITLE, CONTENT, ALARM_DATE, ALARM_TIME);
+        try {
+            JSONObject jsonObject = new JSONObject(mJsonString);
+            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
 
-            list.setAdapter(dbAdapter);
-            dbAdapter.changeCursor(cursor);
-        }
+            for(int i=0;i<jsonArray.length();i++){
 
-        if(requestCode == 1000 && resultCode == 2){
-            String ID = data.getStringExtra("ID");
+                JSONObject item = jsonArray.getJSONObject(i);
 
-            dbHelper.onDelete(Integer.parseInt(ID));
+                NO = item.getString(TAG_NO);
+                TITLE = item.getString(TAG_TITLE);
+                CONTENT = item.getString(TAG_CONTENT);
+                CREATE_DATE = item.getString(TAG_CREATE_DATE);
+                ALARM_DATE = item.getString(TAG_ALARM_DATE);
+                ALARM_TIME = item.getString(TAG_ALARM_TIME);
 
-            list.setAdapter(dbAdapter);
-            dbAdapter.changeCursor(cursor);
-        }
+                Log.e(TAG, NO);
+                Log.e(TAG, TITLE);
+                Log.e(TAG, CONTENT);
+                Log.e(TAG, CREATE_DATE);
+                Log.e(TAG, ALARM_DATE);
+                Log.e(TAG, ALARM_TIME);
 
-        if(resultCode == 10){
-            list.setAdapter(dbAdapter);
-            dbAdapter.changeCursor(cursor);
+//                CustomerItem personalData = new CustomerItem();
+//                personalData.setID(name);
+//                personalData.setNickname(nickname);
+//
+//                adapter.items.clear();
+//                adapter.addItem(personalData);
+//                adapter.notifyDataSetChanged();
+            }
+        } catch (JSONException e) {
+
+            Log.d(TAG, "showResult : ", e);
         }
     }
 }

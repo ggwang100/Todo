@@ -1,18 +1,31 @@
 package com.example.gwangtae.todo;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class read extends AppCompatActivity{
 
     TextView TITLE, CONTENT, ALARM_DATE, CREATE_DATE, ALARM_TIME;
     String UPDATE_ALARM_DATE, UPDATE_ALARM_TIME, UPDATE_TITLE;
     Intent data;
+
+    private static String TAG = "TODO";
 
     boolean update_ok;
 
@@ -37,21 +50,13 @@ public class read extends AppCompatActivity{
         CREATE_DATE.setText("작성 날짜 : " + data.getStringExtra("CREATE_DATE"));
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        setResult(10, intent);
-        finish();
-        super.onBackPressed();
-    }
-
     public void onClick(View view) {
         int id = view.getId();
         Intent intent = new Intent(this, edit_record.class);
         if (id == R.id.btn_update) { // 수정 버튼
             if(update_ok) {
                 intent.putExtra("MODE", "UPDATE");
-                intent.putExtra("ID",data.getStringExtra("ID"));
+                intent.putExtra("ID", data.getStringExtra("ID"));
                 intent.putExtra("TITLE", UPDATE_TITLE);
                 intent.putExtra("CONTENT", CONTENT.getText().toString());
                 intent.putExtra("ALARM_DATE", UPDATE_ALARM_DATE);
@@ -69,27 +74,90 @@ public class read extends AppCompatActivity{
         }
 
         if (id == R.id.btn_delete) { // 삭제 버튼
-            intent = new Intent();
-            intent.putExtra("ID", data.getStringExtra("ID"));
-            setResult(2, intent);
-            finish();
+            DelectTask delectTask = new DelectTask();
+            delectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/delete.php", data.getStringExtra("TITLE"), data.getStringExtra("ID"));
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private class DelectTask extends AsyncTask<String, Void, String> {
+        ProgressDialog progressDialog;
+        String errorString = null;
 
-        if(requestCode == 1001 && resultCode == 1){
-            update_ok = true;
-            UPDATE_TITLE = data.getStringExtra("TITLE");
-            UPDATE_ALARM_DATE = data.getStringExtra("ALARM_DATE");
-            UPDATE_ALARM_TIME = data.getStringExtra("ALARM_TIME");
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
-            TITLE.setText("제목 : " + UPDATE_TITLE);
-            CONTENT.setText(data.getStringExtra("CONTENT"));
-            ALARM_DATE.setText("알람 날짜 : " + UPDATE_ALARM_DATE);
-            ALARM_TIME.setText("시간 : " + UPDATE_ALARM_TIME);
+            progressDialog = ProgressDialog.show(read.this,
+                    "Please Wait", null, true, true);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String serverURL = params[0];
+            String title = params[1];
+            int ID = Integer.parseInt(params[2]);
+
+            String data = "TITLE=" + title + "&ID=" + ID;
+
+            try {
+                URL url = new URL(serverURL);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+                httpURLConnection.setReadTimeout(5000);
+                httpURLConnection.setConnectTimeout(5000);
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoInput(true);
+                httpURLConnection.connect();
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                outputStream.write(data.getBytes("UTF-8"));
+                outputStream.flush();
+                outputStream.close();
+
+                int responseStatusCode = httpURLConnection.getResponseCode();
+                Log.d(TAG, "response code - " + responseStatusCode);
+
+                InputStream inputStream;
+                if(responseStatusCode == HttpURLConnection.HTTP_OK) {
+                    inputStream = httpURLConnection.getInputStream();
+                }
+                else{
+                    inputStream = httpURLConnection.getErrorStream();
+                }
+
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                StringBuilder sb = new StringBuilder();
+                String line;
+
+                while((line = bufferedReader.readLine()) != null){
+                    sb.append(line);
+                }
+                bufferedReader.close();
+
+                return sb.toString().trim();
+
+            } catch (Exception e) {
+                Log.d(TAG, "GetData : Error ", e);
+                errorString = e.toString();
+
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            progressDialog.dismiss();
+
+            if (result == null){
+                // 인텐트 실패
+            }
+            else {
+                finish();
+            }
         }
     }
 }
