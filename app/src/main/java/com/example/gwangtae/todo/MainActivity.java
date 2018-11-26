@@ -2,8 +2,6 @@ package com.example.gwangtae.todo;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -31,15 +29,15 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import DB.DBAdapter;
-import DB.DBHelper;
-import Service.MyService;
+import Adapter.SingerItem;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     String title, content, date;
     ListView list;
+
+    SingerAdapter adapter;
 
     // 방 목록
     String mJsonString;
@@ -51,6 +49,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        list = (ListView) findViewById(R.id.list);
+        adapter = new SingerAdapter();
 
 //        Intent Service = new Intent(this, MyService.class);
 //        startService(Service);
@@ -70,12 +71,11 @@ public class MainActivity extends AppCompatActivity
         SelectTask selectTask = new SelectTask();
         selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select.php");
 
-        list = (ListView) findViewById(R.id.list);
-
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                SingerItem item = (SingerItem) adapter.getItem(position);
+                Toast.makeText(getApplicationContext(), "선택 : " + item.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected String doInBackground(String... params) {
             String serverURL = params[0];
-            // String data = "id=" + params[1];
 
             try {
                 URL url = new URL(serverURL);
@@ -175,7 +174,6 @@ public class MainActivity extends AppCompatActivity
                 httpURLConnection.connect();
 
                 OutputStream outputStream = httpURLConnection.getOutputStream();
-                // outputStream.write(data.getBytes("UTF-8"));
                 outputStream.flush();
                 outputStream.close();
 
@@ -248,27 +246,14 @@ public class MainActivity extends AppCompatActivity
 
                 JSONObject item = jsonArray.getJSONObject(i);
 
-                NO = item.getString(TAG_NO);
                 TITLE = item.getString(TAG_TITLE);
                 CONTENT = item.getString(TAG_CONTENT);
                 CREATE_DATE = item.getString(TAG_CREATE_DATE);
-                ALARM_DATE = item.getString(TAG_ALARM_DATE);
-                ALARM_TIME = item.getString(TAG_ALARM_TIME);
 
-                Log.e(TAG, NO);
-                Log.e(TAG, TITLE);
-                Log.e(TAG, CONTENT);
-                Log.e(TAG, CREATE_DATE);
-                Log.e(TAG, ALARM_DATE);
-                Log.e(TAG, ALARM_TIME);
+                adapter.addItem(new SingerItem(TITLE, CONTENT, CREATE_DATE));
+                list.setAdapter(adapter);
 
-//                CustomerItem personalData = new CustomerItem();
-//                personalData.setID(name);
-//                personalData.setNickname(nickname);
-//
-//                adapter.items.clear();
-//                adapter.addItem(personalData);
-//                adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
         } catch (JSONException e) {
 
