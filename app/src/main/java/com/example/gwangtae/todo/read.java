@@ -186,8 +186,8 @@ public class read extends AppCompatActivity{
                 
                 TITLE.setText("제목 : " + item.getString("TITLE"));
                 CONTENT.setText(item.getString("CONTENT"));
-                ALARM_DATE.setText("알람 날짜 : " + STR_ALARM_DATE);
-                ALARM_TIME.setText("시간 : " + STR_ALARM_TIME);
+                ALARM_DATE.setText("알람 날짜 : " + item.getString("ALARM_DATE"));
+                ALARM_TIME.setText("시간 : " + item.getString("ALARM_TIME"));
                 CREATE_DATE.setText("작성 날짜 : " + item.getString("CREATE_DATE"));
                 
             }
