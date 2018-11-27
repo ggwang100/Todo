@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity
                 READ.putExtra("ID", item.getId());
                 READ.putExtra("TITLE", item.getTitle());
                 startActivity(READ);
-                finish();
             }
         });
     }
@@ -92,6 +91,7 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            finish();
         }
     }
 

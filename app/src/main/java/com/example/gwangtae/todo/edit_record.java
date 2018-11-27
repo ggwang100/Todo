@@ -29,8 +29,8 @@ public class edit_record extends AppCompatActivity {
 
     EditText edit_title, edit_content;
     TextView text_alarm_date, text_alarm_time;
-    String alarm_date, alarm_time, save_title;
-    int YEAR, MONTH, DAY, HOUR, MINUTE, ID;
+    String ID, alarm_date, alarm_time;
+    int YEAR, MONTH, DAY, HOUR, MINUTE;
     Intent mode;
 
     private static String TAG = "TODO";
@@ -62,13 +62,13 @@ public class edit_record extends AppCompatActivity {
 
         if(mode.getStringExtra("MODE").equals("UPDATE")){
             btn_add = (Button) findViewById(R.id.btn_add);
-            ID = Integer.parseInt(mode.getStringExtra("ID"));
+
+            ID = mode.getStringExtra("ID");
             edit_title.setText(mode.getStringExtra("TITLE"));
             edit_content.setText(mode.getStringExtra("CONTENT"));
             text_alarm_date.setText(mode.getStringExtra("ALARM_DATE"));
             text_alarm_time.setText(mode.getStringExtra("ALARM_TIME"));
 
-            save_title = mode.getStringExtra("TITLE");
             alarm_date = mode.getStringExtra("ALARM_DATE");
             alarm_time = mode.getStringExtra("ALARM_TIME");
 
@@ -122,7 +122,7 @@ public class edit_record extends AppCompatActivity {
         }
         if (id == R.id.btn_update){
             UpdateTask updateTask = new UpdateTask();
-            updateTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/update.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, alarm_time, save_title, String.valueOf(ID));
+            updateTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/update.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, alarm_time, ID);
 //            Intent intent = new Intent();
 //
 //            intent.putExtra("TITLE", edit_title.getText().toString());
@@ -215,7 +215,6 @@ public class edit_record extends AppCompatActivity {
                 // 인텐트 실패
             }
             else {
-
                 Intent intent = new Intent();
                 setResult(1, intent);
                 finish();
@@ -242,10 +241,9 @@ public class edit_record extends AppCompatActivity {
             String content = params[2];
             String alarm_date = params[3];
             String alarm_time = params[4];
-            String save_titme = params[5];
-            int ID = Integer.parseInt(params[6]);
+            int ID = Integer.parseInt(params[5]);
 
-            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE = " + alarm_date + "&ALARM_TIME = " + alarm_time + "&save_titme = " + save_titme + "&_ID = " + ID;
+            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE=" + alarm_date + "&ALARM_TIME=" + alarm_time + "&ID=" + ID;
 
             try {
                 URL url = new URL(serverURL);
@@ -306,10 +304,9 @@ public class edit_record extends AppCompatActivity {
             else {
                 Intent intent = new Intent(getApplicationContext(), read.class);
 
+                intent.putExtra("MODE", "UPDATE");
+                intent.putExtra("ID", ID);
                 intent.putExtra("TITLE", edit_title.getText().toString());
-                intent.putExtra("CONTENT", edit_content.getText().toString());
-                intent.putExtra("ALARM_DATE", text_alarm_date.getText());
-                intent.putExtra("ALARM_TIME", text_alarm_time.getText());
 
                 startActivity(intent);
                 finish();

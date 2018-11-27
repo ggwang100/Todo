@@ -27,16 +27,13 @@ import java.net.URL;
 public class read extends AppCompatActivity{
 
     TextView TITLE, CONTENT, ALARM_DATE, CREATE_DATE, ALARM_TIME;
-    String UPDATE_ALARM_DATE, UPDATE_ALARM_TIME, UPDATE_TITLE;
+    String str_title, str_content, str_alarm_date, str_alarm_time;
+
     Intent data;
     
     String mJsonString;
-    String STR_ALARM_DATE, STR_ALARM_TIME;
-
 
     private static String TAG = "TODO";
-
-    boolean update_ok;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,37 +47,33 @@ public class read extends AppCompatActivity{
         ALARM_DATE = (TextView) findViewById(R.id.text_alarm_date);
         ALARM_TIME = (TextView) findViewById(R.id.text_alarm_time);
         CREATE_DATE = (TextView) findViewById(R.id.text_date);
-        
+
+
         SelectTask selectTask = new SelectTask();
         selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select_title.php", data.getStringExtra("TITLE"), data.getStringExtra("ID"));
+
+
 
 //        if(ALARM_DATE.getText().equals("null") && ALARM_TIME.getText().equals("null")){
 //            ALARM_DATE.setVisibility(View.GONE);
 //            ALARM_TIME.setVisibility(View.GONE);
-//        }
+////        }
     }
 
     public void onClick(View view) {
         int id = view.getId();
         Intent intent = new Intent(this, edit_record.class);
         if (id == R.id.btn_update) { // 수정 버튼
-            if(update_ok) {
-                intent.putExtra("MODE", "UPDATE");
-                intent.putExtra("ID", data.getStringExtra("ID"));
-                intent.putExtra("TITLE", UPDATE_TITLE);
-                intent.putExtra("CONTENT", CONTENT.getText().toString());
-                intent.putExtra("ALARM_DATE", UPDATE_ALARM_DATE);
-                intent.putExtra("ALARM_TIME", UPDATE_ALARM_TIME);
-            } else {
-                intent.putExtra("MODE", "UPDATE");
-                intent.putExtra("ID",data.getStringExtra("ID"));
-                intent.putExtra("TITLE",data.getStringExtra("TITLE"));
-                intent.putExtra("CONTENT", data.getStringExtra("CONTENT"));
-                intent.putExtra("ALARM_DATE", data.getStringExtra("ALARM_DATE"));
-                intent.putExtra("ALARM_TIME", data.getStringExtra("ALARM_TIME"));
-            }
 
-            startActivityForResult(intent, 1001);
+            intent.putExtra("MODE", "UPDATE");
+            intent.putExtra("ID",data.getStringExtra("ID"));
+            intent.putExtra("TITLE", str_title);
+            intent.putExtra("CONTENT", str_content);
+            intent.putExtra("ALARM_DATE", str_alarm_date);
+            intent.putExtra("ALARM_TIME", str_alarm_time);
+
+            startActivity(intent);
+            finish();
         }
 
         if (id == R.id.btn_delete) { // 삭제 버튼
@@ -183,6 +176,11 @@ public class read extends AppCompatActivity{
             for(int i=0;i<jsonArray.length();i++){
 
                 JSONObject item = jsonArray.getJSONObject(i);
+
+                str_title = item.getString("TITLE");
+                str_content = item.getString("CONTENT");
+                str_alarm_date = item.getString("ALARM_DATE");
+                str_alarm_time = item.getString("ALARM_TIME");
                 
                 TITLE.setText("제목 : " + item.getString("TITLE"));
                 CONTENT.setText(item.getString("CONTENT"));
@@ -283,8 +281,6 @@ public class read extends AppCompatActivity{
     public void onBackPressed() {
         super.onBackPressed();
 
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
         finish();
     }
 
