@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     String id, title, content, date;
-    SelectTask selectTask;
+
     ListView list;
 
     SingerAdapter adapter;
@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity
     // 방 목록
     String mJsonString;
     private static String TAG = "TODO";
-
-    String NO, TITLE, CONTENT, CREATE_DATE, ALARM_DATE, ALARM_TIME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,36 +68,21 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         SelectTask selectTask = new SelectTask();
-
-
-        selectTask = new SelectTask();
         selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select.php");
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            /*
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SingerItem item = (SingerItem) adapter.getItem(position);
-                Toast.makeText(getApplicationContext(), "선택 : " + item.getTitle(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        */
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SingerItem item = (SingerItem) adapter.getItem(position);
-                // Toast.makeText(getApplicationContext(), "선택 : " + item.getTitle(), Toast.LENGTH_SHORT).show(); // 삭제
 
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            SingerItem item = (SingerItem) adapter.getItem(position);
 
                 Intent READ = new Intent(getApplicationContext(), read.class);
-                //READ.putExtra("NO", item.getId());
-                Toast.makeText(getApplicationContext(), item.getId(), Toast.LENGTH_LONG).show();
-
-                //READ.putExtra("TITLE", item.getTitle());
-                Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+                READ.putExtra("ID", item.getId());
+                READ.putExtra("TITLE", item.getTitle());
                 startActivity(READ);
+                finish();
             }
         });
-
     }
 
     @Override
@@ -249,71 +232,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showResult() {
-
-        String TAG_JSON = "RESULT";
-
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray("RESULT"); // 추가
-
+            adapter.items.clear();
             for (int i = 0; i < jsonArray.length(); i++) {
 
                 JSONObject item = jsonArray.getJSONObject(i);
 
-
                 adapter.addItem(new SingerItem(item.getString("NO"), item.getString("TITLE"), item.getString("CONTENT"), item.getString("CREATE_DATE"))); // 추가
-
-                list.setAdapter(adapter);
-
                 adapter.notifyDataSetChanged();
-            }
-        } catch (JSONException e) {
-
-            Log.d(TAG, "showResult : ", e);
-        }
-
-    }
-
-        /*
-        String TAG_JSON="RESULT";
-        String TAG_NO = "NO";
-        String TAG_TITLE = "TITLE";
-        String TAG_CONTENT = "CONTENT";
-        String TAG_CREATE_DATE = "CREATE_DATE";
-        String TAG_ALARM_DATE = "ALARM_DATE";
-        String TAG_ALARM_TIME = "ALARM_TIME";
-
-        try {
-            JSONObject jsonObject = new JSONObject(mJsonString);
-            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
-
-            for(int i=0;i<jsonArray.length();i++){
-
-                JSONObject item = jsonArray.getJSONObject(i);
-
-                TITLE = item.getString(TAG_TITLE);
-                CONTENT = item.getString(TAG_CONTENT);
-                CREATE_DATE = item.getString(TAG_CREATE_DATE);
-
-                adapter.addItem(new SingerItem(TITLE, CONTENT, CREATE_DATE));
                 list.setAdapter(adapter);
-
-                adapter.notifyDataSetChanged();
             }
         } catch (JSONException e) {
 
             Log.d(TAG, "showResult : ", e);
         }
     }
-    */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1000 && resultCode == 1) {
-            list.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
+            SelectTask selectTask = new SelectTask();
+            selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select.php");
         }
-
     }
 }

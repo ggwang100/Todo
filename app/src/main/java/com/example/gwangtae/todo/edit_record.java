@@ -23,6 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
 
+import Adapter.SingerItem;
+
 public class edit_record extends AppCompatActivity {
 
     EditText edit_title, edit_content;
@@ -113,7 +115,7 @@ public class edit_record extends AppCompatActivity {
 
             // 추가
             if (text_alarm_date.getText() == null && text_alarm_date.getText().length() == 0) {
-                insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), "null", "null");
+                insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), "", "");
             } else {
                 insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, alarm_time);
             }
@@ -216,7 +218,6 @@ public class edit_record extends AppCompatActivity {
 
                 Intent intent = new Intent();
                 setResult(1, intent);
-
                 finish();
             }
         }
