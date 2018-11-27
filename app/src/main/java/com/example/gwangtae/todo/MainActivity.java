@@ -34,7 +34,7 @@ import Adapter.SingerItem;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    String title, content, date;
+    String  id, title, content, date;
     ListView list;
 
     SingerAdapter adapter;
@@ -72,12 +72,30 @@ public class MainActivity extends AppCompatActivity
         selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select.php");
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            /*
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SingerItem item = (SingerItem) adapter.getItem(position);
                 Toast.makeText(getApplicationContext(), "선택 : " + item.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
+        */
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SingerItem item = (SingerItem) adapter.getItem(position);
+               // Toast.makeText(getApplicationContext(), "선택 : " + item.getTitle(), Toast.LENGTH_SHORT).show(); // 삭제
+
+
+                Intent READ = new Intent(getApplicationContext(), read.class);
+                //READ.putExtra("NO", item.getId());
+                Toast.makeText(getApplicationContext(), item.getId(), Toast.LENGTH_LONG).show();
+
+                //READ.putExtra("TITLE", item.getTitle());
+                Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+                startActivity(READ);
+            }
+        });
+
     }
 
     @Override
@@ -231,6 +249,31 @@ public class MainActivity extends AppCompatActivity
     private void showResult(){
 
         String TAG_JSON="RESULT";
+
+        try {
+          JSONObject jsonObject = new JSONObject(mJsonString);
+        JSONArray jsonArray = jsonObject.getJSONArray("RESULT"); // 추가
+
+            for(int i=0;i<jsonArray.length();i++){
+
+           JSONObject item = jsonArray.getJSONObject(i);
+
+
+               adapter.addItem(new SingerItem(item.getString("NO"), item.getString("TITLE"), item.getString("CONTENT"), item.getString("CREATE_DATE"))); // 추가
+
+                list.setAdapter(adapter);
+
+                 adapter.notifyDataSetChanged();
+         }
+        } catch (JSONException e) {
+
+           Log.d(TAG, "showResult : ", e);
+        }
+
+    }
+
+        /*
+        String TAG_JSON="RESULT";
         String TAG_NO = "NO";
         String TAG_TITLE = "TITLE";
         String TAG_CONTENT = "CONTENT";
@@ -260,4 +303,5 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "showResult : ", e);
         }
     }
+    */
 }
