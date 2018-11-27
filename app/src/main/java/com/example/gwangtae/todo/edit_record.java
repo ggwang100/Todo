@@ -154,7 +154,7 @@ public class edit_record extends AppCompatActivity {
             String alarm_date = params[3];
             String alarm_time = params[4];
 
-            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE = " + alarm_date + "&ALARM_TIME = " + alarm_time;
+            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE=" + alarm_date + "&ALARM_TIME=" + alarm_time;
 
             try {
                 URL url = new URL(serverURL);
