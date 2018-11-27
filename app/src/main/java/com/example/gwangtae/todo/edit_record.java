@@ -53,7 +53,7 @@ public class edit_record extends AppCompatActivity {
         text_alarm_date = (TextView) findViewById(R.id.text_alarm_date);
         text_alarm_time = (TextView) findViewById(R.id.text_alarm_time);
 
-        if(mode.getStringExtra("MODE").equals("READ")){
+        if(mode.getStringExtra("MODE").equals("RECORD")){
             btn_update = (Button) findViewById(R.id.btn_update);
             btn_update.setVisibility(View.GONE);
         }
@@ -110,9 +110,14 @@ public class edit_record extends AppCompatActivity {
 
         if (id == R.id.btn_add) { // 추가 버튼
             InsertTask insertTask = new InsertTask();
-            insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, alarm_time);
-        }
 
+            // 추가
+            if (text_alarm_date.getText() == null && text_alarm_date.getText().length() == 0) {
+                insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), "null", "null");
+            } else {
+                insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, alarm_time);
+            }
+        }
         if (id == R.id.btn_update){
             UpdateTask updateTask = new UpdateTask();
             updateTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/update.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, alarm_time, save_title, String.valueOf(ID));
@@ -149,7 +154,7 @@ public class edit_record extends AppCompatActivity {
             String alarm_date = params[3];
             String alarm_time = params[4];
 
-            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE = " + alarm_date + "&ALARM_TIME = " + alarm_time;
+            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE=" + alarm_date + "&ALARM_TIME=" + alarm_time;
 
             try {
                 URL url = new URL(serverURL);
@@ -208,22 +213,10 @@ public class edit_record extends AppCompatActivity {
                 // 인텐트 실패
             }
             else {
-                Intent intent = new Intent(getApplicationContext(), read.class);
 
-                if (text_alarm_date.getText() == null && text_alarm_date.getText().length() == 0) {
+                Intent intent = new Intent();
+                setResult(1, intent);
 
-                    intent.putExtra("TITLE", edit_title.getText().toString());
-                    intent.putExtra("CONTENT", edit_content.getText().toString());
-                    intent.putExtra("ALARM_DATE", "null");
-                    intent.putExtra("ALARM_TIME", "null");
-                } else {
-                    intent.putExtra("TITLE", edit_title.getText().toString());
-                    intent.putExtra("CONTENT", edit_content.getText().toString());
-                    intent.putExtra("ALARM_DATE", text_alarm_date.getText());
-                    intent.putExtra("ALARM_TIME", text_alarm_time.getText());
-                }
-
-                startActivity(intent);
                 finish();
             }
         }

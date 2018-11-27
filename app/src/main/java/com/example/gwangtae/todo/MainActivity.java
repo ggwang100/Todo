@@ -34,7 +34,8 @@ import Adapter.SingerItem;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    String title, content, date;
+    String id, title, content, date;
+    SelectTask selectTask;
     ListView list;
 
     SingerAdapter adapter;
@@ -69,15 +70,36 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         SelectTask selectTask = new SelectTask();
+
+
+        selectTask = new SelectTask();
         selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select.php");
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            /*
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SingerItem item = (SingerItem) adapter.getItem(position);
                 Toast.makeText(getApplicationContext(), "선택 : " + item.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
+        */
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SingerItem item = (SingerItem) adapter.getItem(position);
+                // Toast.makeText(getApplicationContext(), "선택 : " + item.getTitle(), Toast.LENGTH_SHORT).show(); // 삭제
+
+
+                Intent READ = new Intent(getApplicationContext(), read.class);
+                //READ.putExtra("NO", item.getId());
+                Toast.makeText(getApplicationContext(), item.getId(), Toast.LENGTH_LONG).show();
+
+                //READ.putExtra("TITLE", item.getTitle());
+                Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+                startActivity(READ);
+            }
+        });
+
     }
 
     @Override
@@ -142,12 +164,12 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.btn_add) {
             Intent record = new Intent(this, edit_record.class);
-            record.putExtra("MODE", "READ");
+            record.putExtra("MODE", "RECORD");
             startActivityForResult(record, 1000);
         }
     }
 
-    private class SelectTask extends AsyncTask<String, Void, String>{
+    private class SelectTask extends AsyncTask<String, Void, String> {
         ProgressDialog progressDialog;
         String errorString = null;
 
@@ -181,10 +203,9 @@ public class MainActivity extends AppCompatActivity
                 Log.d(TAG, "response code - " + responseStatusCode);
 
                 InputStream inputStream;
-                if(responseStatusCode == HttpURLConnection.HTTP_OK) {
+                if (responseStatusCode == HttpURLConnection.HTTP_OK) {
                     inputStream = httpURLConnection.getInputStream();
-                }
-                else{
+                } else {
                     inputStream = httpURLConnection.getErrorStream();
                 }
 
@@ -194,7 +215,7 @@ public class MainActivity extends AppCompatActivity
                 StringBuilder sb = new StringBuilder();
                 String line;
 
-                while((line = bufferedReader.readLine()) != null){
+                while ((line = bufferedReader.readLine()) != null) {
                     sb.append(line);
                 }
                 bufferedReader.close();
@@ -215,12 +236,11 @@ public class MainActivity extends AppCompatActivity
 
             progressDialog.dismiss();
 
-            if (result == null){
+            if (result == null) {
 
                 Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, errorString);
-            }
-            else {
+            } else {
                 mJsonString = result;
                 Log.d("succ", mJsonString);
                 showResult();
@@ -228,8 +248,33 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void showResult(){
+    private void showResult() {
 
+        String TAG_JSON = "RESULT";
+
+        try {
+            JSONObject jsonObject = new JSONObject(mJsonString);
+            JSONArray jsonArray = jsonObject.getJSONArray("RESULT"); // 추가
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                JSONObject item = jsonArray.getJSONObject(i);
+
+
+                adapter.addItem(new SingerItem(item.getString("NO"), item.getString("TITLE"), item.getString("CONTENT"), item.getString("CREATE_DATE"))); // 추가
+
+                list.setAdapter(adapter);
+
+                adapter.notifyDataSetChanged();
+            }
+        } catch (JSONException e) {
+
+            Log.d(TAG, "showResult : ", e);
+        }
+
+    }
+
+        /*
         String TAG_JSON="RESULT";
         String TAG_NO = "NO";
         String TAG_TITLE = "TITLE";
@@ -259,5 +304,16 @@ public class MainActivity extends AppCompatActivity
 
             Log.d(TAG, "showResult : ", e);
         }
+    }
+    */
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1000 && resultCode == 1) {
+            list.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+
     }
 }
