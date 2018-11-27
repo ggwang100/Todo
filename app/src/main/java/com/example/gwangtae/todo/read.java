@@ -24,6 +24,8 @@ public class read extends AppCompatActivity{
     TextView TITLE, CONTENT, ALARM_DATE, CREATE_DATE, ALARM_TIME;
     String UPDATE_ALARM_DATE, UPDATE_ALARM_TIME, UPDATE_TITLE;
     Intent data;
+    
+    String mJsonString;
 
     private static String TAG = "TODO";
 
@@ -41,13 +43,9 @@ public class read extends AppCompatActivity{
         ALARM_DATE = (TextView) findViewById(R.id.text_alarm_date);
         ALARM_TIME = (TextView) findViewById(R.id.text_alarm_time);
         CREATE_DATE = (TextView) findViewById(R.id.text_date);
-
-
-        TITLE.setText("제목 : " + data.getStringExtra("TITLE"));
-        CONTENT.setText(data.getStringExtra("CONTENT"));
-        ALARM_DATE.setText("알람 날짜 : " + data.getStringExtra("ALARM_DATE"));
-        ALARM_TIME.setText("시간 : " + data.getStringExtra("ALARM_TIME"));
-        CREATE_DATE.setText("작성 날짜 : " + data.getStringExtra("CREATE_DATE"));
+        
+        SelectTask selectTask = new SelectTask();
+        selectTask.execute("eungho77.ipdisk.co.kr:8000/TODO/select_serach_title.php", data.getStringExtra("TITLE"), data.getStringExtra("NO"));
     }
 
     public void onClick(View view) {
@@ -74,12 +72,118 @@ public class read extends AppCompatActivity{
         }
 
         if (id == R.id.btn_delete) { // 삭제 버튼
-            DelectTask delectTask = new DelectTask();
-            delectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/delete.php", data.getStringExtra("TITLE"), data.getStringExtra("ID"));
+            DeleteTask delectTask = new DeleteTask();
+            delectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/delete.php", data.getStringExtra("TITLE"), data.getStringExtra("NO"));
+        }
+    }
+    
+    private class SelectTask extends AsyncTask<String, Void, String>{
+        ProgressDialog progressDialog;
+        String errorString = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = ProgressDialog.show(MainActivity.this,
+                    "Please Wait", null, true, true);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String serverURL = params[0];
+            String title = params[1];
+            int id = Integer.parseInt(params[2]);
+            
+             String data = "TITLE=" + title + "&ID=" + id;
+
+            try {
+                URL url = new URL(serverURL);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+                httpURLConnection.setReadTimeout(5000);
+                httpURLConnection.setConnectTimeout(5000);
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoInput(true);
+                httpURLConnection.connect();
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                outputStream.flush();
+                outputStream.close();
+
+                int responseStatusCode = httpURLConnection.getResponseCode();
+                Log.d(TAG, "response code - " + responseStatusCode);
+
+                InputStream inputStream;
+                if(responseStatusCode == HttpURLConnection.HTTP_OK) {
+                    inputStream = httpURLConnection.getInputStream();
+                }
+                else{
+                    inputStream = httpURLConnection.getErrorStream();
+                }
+
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                StringBuilder sb = new StringBuilder();
+                String line;
+
+                while((line = bufferedReader.readLine()) != null){
+                    sb.append(line);
+                }
+                bufferedReader.close();
+
+                return sb.toString().trim();
+
+            } catch (Exception e) {
+                Log.d(TAG, "GetData : Error ", e);
+                errorString = e.toString();
+
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            progressDialog.dismiss();
+
+            if (result == null){
+
+                Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, errorString);
+            }
+            else {
+                mJsonString = result;
+                Log.d("succ", mJsonString);
+                showResult();
+            }
         }
     }
 
-    private class DelectTask extends AsyncTask<String, Void, String> {
+    private void showResult(){
+        try {
+            JSONObject jsonObject = new JSONObject(mJsonString);
+            JSONArray jsonArray = jsonObject.getJSONArray("RESULT");
+
+            for(int i=0;i<jsonArray.length();i++){
+
+                JSONObject item = jsonArray.getJSONObject(i);
+                
+                TITLE.setText("제목 : " + item.getString("TITLE"));
+                CONTENT.setText(item.getString("CONTENT"));
+                ALARM_DATE.setText("알람 날짜 : " + data.getStringExtra("ALARM_DATE"));
+                ALARM_TIME.setText("시간 : " + data.getStringExtra("ALARM_TIME"));
+                CREATE_DATE.setText("작성 날짜 : " + item.getString("CREATE_DATE"));
+                
+            }
+        } catch (JSONException e) {
+            Log.d(TAG, "showResult : ", e);
+        }
+    }
+
+    private class DeleteTask extends AsyncTask<String, Void, String> {
         ProgressDialog progressDialog;
         String errorString = null;
 
@@ -95,9 +199,9 @@ public class read extends AppCompatActivity{
         protected String doInBackground(String... params) {
             String serverURL = params[0];
             String title = params[1];
-            int ID = Integer.parseInt(params[2]);
+            int id = Integer.parseInt(params[2]);
 
-            String data = "TITLE=" + title + "&ID=" + ID;
+            String data = "TITLE=" + title + "&ID=" + id;
 
             try {
                 URL url = new URL(serverURL);
@@ -156,6 +260,8 @@ public class read extends AppCompatActivity{
                 // 인텐트 실패
             }
             else {
+                Intent intent = new Intent();
+                setResult(1, intent);
                 finish();
             }
         }
