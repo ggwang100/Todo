@@ -22,7 +22,6 @@ import DB.DBHelper;
 import Service.MyService;
 
 public class Main_backup extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
     DBHelper dbHelper;
     SQLiteDatabase sqLiteDatabase;
     Cursor cursor;
