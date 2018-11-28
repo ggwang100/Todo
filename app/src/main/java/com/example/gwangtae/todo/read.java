@@ -54,10 +54,10 @@ public class read extends AppCompatActivity{
 
 
 
-//        if(ALARM_DATE.getText().equals("null") && ALARM_TIME.getText().equals("null")){
-//            ALARM_DATE.setVisibility(View.GONE);
-//            ALARM_TIME.setVisibility(View.GONE);
-////        }
+       if(ALARM_DATE.getText().equals("null") && ALARM_TIME.getText().equals("null")){
+           ALARM_DATE.setVisibility(View.GONE);
+            ALARM_TIME.setVisibility(View.GONE);
+        }
     }
 
     public void onClick(View view) {
@@ -186,9 +186,13 @@ public class read extends AppCompatActivity{
                 
                 TITLE.setText("제목 : " + item.getString("TITLE"));
                 CONTENT.setText(item.getString("CONTENT"));
-                ALARM_DATE.setText("알람 날짜 : " + item.getString("ALARM_DATE"));
+                if(str_alarm_date.equals("null")){
+                    ALARM_DATE.setVisibility(View.GONE);
+                } else {
+                    ALARM_DATE.setText("시간 : " + str_alarm_date);
+                }
                 if(str_alarm_hour.equals("null") && str_alarm_min.equals("null")){
-                    ALARM_TIME.setText("시간 : null");
+                    ALARM_TIME.setVisibility(View.GONE);
                 } else {
                     ALARM_TIME.setText("시간 : " + str_alarm_hour + ":" + str_alarm_min);
                 }
@@ -288,6 +292,8 @@ public class read extends AppCompatActivity{
     public void onBackPressed() {
         super.onBackPressed();
 
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
         finish();
     }
 

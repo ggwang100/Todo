@@ -23,14 +23,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
 
-import Adapter.SingerItem;
-
 public class edit_record extends AppCompatActivity {
 
     EditText edit_title, edit_content;
     TextView text_alarm_date, text_alarm_time;
     String ID, alarm_date, alarm_time, hour, min;
-    int YEAR, MONTH, DAY, HOUR, MINUTE;
     Intent mode;
 
     private static String TAG = "TODO";
@@ -43,13 +40,6 @@ public class edit_record extends AppCompatActivity {
         setContentView(R.layout.record);
 
         mode = getIntent();
-
-        YEAR = Calendar.getInstance().get(Calendar.YEAR); // 현재 년도를 가져온다.
-        MONTH = Calendar.getInstance().get(Calendar.MONTH); // 현재 월을 가져온다. 기본으로 0월부터 11월까지 설정되어 있어 +1 증가해줘야 1월부터 12월까지 표기된다.
-        DAY = Calendar.getInstance().get(Calendar.DAY_OF_MONTH); // 현재 일을 가져온다.
-        HOUR = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        MINUTE = Calendar.getInstance().get(Calendar.MINUTE);
-
         edit_content = (EditText) findViewById(R.id.edit_content);
         edit_title = (EditText) findViewById(R.id.edit_title);
         text_alarm_date = (TextView) findViewById(R.id.text_alarm_date);
@@ -66,8 +56,13 @@ public class edit_record extends AppCompatActivity {
             ID = mode.getStringExtra("ID");
             edit_title.setText(mode.getStringExtra("TITLE"));
             edit_content.setText(mode.getStringExtra("CONTENT"));
-            text_alarm_date.setText(mode.getStringExtra("ALARM_DATE"));
-            text_alarm_time.setText(mode.getStringExtra("HOUR") + ":" + mode.getStringExtra("MIN"));
+            if(mode.getStringExtra("HOUR").equals("null") && mode.getStringExtra("MIN").equals("null")){
+                text_alarm_date.setText("");
+                text_alarm_time.setText("");
+            } else {
+                text_alarm_time.setText(mode.getStringExtra("HOUR") + ":" + mode.getStringExtra("MIN"));
+            }
+
 
             alarm_date = mode.getStringExtra("ALARM_DATE");
             hour = mode.getStringExtra("HOUR");
@@ -104,12 +99,12 @@ public class edit_record extends AppCompatActivity {
         int id = view.getId();
 
         if(id == R.id.btn_alarm_date){
-            DatePickerDialog dialog = new DatePickerDialog(this, date_listener, YEAR, MONTH, DAY); // 날짜 선택할 수 있는 다이얼로그창을 띄운다.
+            DatePickerDialog dialog = new DatePickerDialog(this, date_listener, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH)); // 날짜 선택할 수 있는 다이얼로그창을 띄운다.
             dialog.show(); // 다이얼로그 띄우기
         }
 
         if(id == R.id.btn_alarm_time){
-            TimePickerDialog dialog = new TimePickerDialog(this, time_listener, HOUR, MINUTE, true); // 날짜 선택할 수 있는 다이얼로그창을 띄운다.
+            TimePickerDialog dialog = new TimePickerDialog(this, time_listener, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), true); // 날짜 선택할 수 있는 다이얼로그창을 띄운다.
             dialog.show(); // 다이얼로그 띄우기
         }
 

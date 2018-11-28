@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity
                 READ.putExtra("ID", item.getId());
                 READ.putExtra("TITLE", item.getTitle());
                 startActivity(READ);
+                finish();
             }
         });
     }
