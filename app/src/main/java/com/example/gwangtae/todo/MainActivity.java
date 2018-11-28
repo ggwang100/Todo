@@ -61,9 +61,6 @@ public class MainActivity extends AppCompatActivity
         list = (ListView) findViewById(R.id.list);
         adapter = new SingerAdapter();
 
-//        Intent Service = new Intent(this, MyService.class);
-//        startService(Service);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -258,21 +255,21 @@ public class MainActivity extends AppCompatActivity
 
                 adapter.notifyDataSetChanged();
                 list.setAdapter(adapter);
-
-                intent = new Intent(getApplicationContext(), Broadcast.class);
-
-
-                Calendar cal = new GregorianCalendar();
-                cal.setTimeInMillis(System.currentTimeMillis());
+                
+                // 시간 분이 둘 다 null이 아닐 때
                 if(!item.getString("HOUR").equals("null") && !item.getString("MIN").equals("null")) {
+                    intent = new Intent(getApplicationContext(), Broadcast.class);
+                    
+                    Calendar cal = new GregorianCalendar();
+                    cal.setTimeInMillis(System.currentTimeMillis());
                     cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(item.getString("HOUR")));
                     cal.set(Calendar.MINUTE, Integer.parseInt(item.getString("MIN")));
+                    
+                    intent.putExtra("ALARM", "ON");
+
+                    pending_Intent[i] = PendingIntent.getBroadcast(getApplicationContext(), i, intent, 0);
+                    alarm_Manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pending_Intent[i]);
                 }
-
-                intent.putExtra("ALARM", "ON");
-
-                pending_Intent[i] = PendingIntent.getBroadcast(getApplicationContext(), i, intent, 0);
-                alarm_Manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pending_Intent[i]);
             }
         } catch (JSONException e) {
 
