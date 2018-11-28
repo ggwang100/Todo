@@ -29,7 +29,7 @@ public class edit_record extends AppCompatActivity {
 
     EditText edit_title, edit_content;
     TextView text_alarm_date, text_alarm_time;
-    String ID, alarm_date, alarm_time;
+    String ID, alarm_date, alarm_time, hour, min;
     int YEAR, MONTH, DAY, HOUR, MINUTE;
     Intent mode;
 
@@ -67,10 +67,11 @@ public class edit_record extends AppCompatActivity {
             edit_title.setText(mode.getStringExtra("TITLE"));
             edit_content.setText(mode.getStringExtra("CONTENT"));
             text_alarm_date.setText(mode.getStringExtra("ALARM_DATE"));
-            text_alarm_time.setText(mode.getStringExtra("ALARM_TIME"));
+            text_alarm_time.setText(mode.getStringExtra("HOUR") + ":" + mode.getStringExtra("MIN"));
 
             alarm_date = mode.getStringExtra("ALARM_DATE");
-            alarm_time = mode.getStringExtra("ALARM_TIME");
+            hour = mode.getStringExtra("HOUR");
+            min = mode.getStringExtra("MIN");
 
             btn_add.setVisibility(View.GONE);
         }
@@ -92,6 +93,8 @@ public class edit_record extends AppCompatActivity {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 //            String msg = String.format("%d:%d", hourOfDay, minute);
+            hour = String.valueOf(hourOfDay);
+            min = String.valueOf(minute);
             alarm_time = hourOfDay + ":" + minute;
             text_alarm_time.setText(alarm_time);
         }
@@ -115,14 +118,14 @@ public class edit_record extends AppCompatActivity {
 
             // 추가
             if (text_alarm_date.getText() == null && text_alarm_date.getText().length() == 0) {
-                insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), "", "");
+                insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), "", "", "");
             } else {
-                insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, alarm_time);
+                insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, hour, min);
             }
         }
         if (id == R.id.btn_update){
             UpdateTask updateTask = new UpdateTask();
-            updateTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/update.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, alarm_time, ID);
+            updateTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/update.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, hour, min, ID);
 //            Intent intent = new Intent();
 //
 //            intent.putExtra("TITLE", edit_title.getText().toString());
@@ -154,9 +157,10 @@ public class edit_record extends AppCompatActivity {
             String title = params[1];
             String content = params[2];
             String alarm_date = params[3];
-            String alarm_time = params[4];
+            String hour = params[4];
+            String min = params[5];
 
-            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE=" + alarm_date + "&ALARM_TIME=" + alarm_time;
+            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE=" + alarm_date + "&HOUR=" + hour + "&MIN=" + min;
 
             try {
                 URL url = new URL(serverURL);
@@ -240,10 +244,11 @@ public class edit_record extends AppCompatActivity {
             String title = params[1];
             String content = params[2];
             String alarm_date = params[3];
-            String alarm_time = params[4];
-            int ID = Integer.parseInt(params[5]);
+            String hour = params[4];
+            String min = params[5];
+            int ID = Integer.parseInt(params[6]);
 
-            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE=" + alarm_date + "&ALARM_TIME=" + alarm_time + "&ID=" + ID;
+            String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE=" + alarm_date + "&HOUR=" + hour +  "&MIN=" + min + "&ID=" + ID;
 
             try {
                 URL url = new URL(serverURL);

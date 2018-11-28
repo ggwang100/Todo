@@ -27,7 +27,7 @@ import java.net.URL;
 public class read extends AppCompatActivity{
 
     TextView TITLE, CONTENT, ALARM_DATE, CREATE_DATE, ALARM_TIME;
-    String str_title, str_content, str_alarm_date, str_alarm_time;
+    String str_title, str_content, str_alarm_date, str_alarm_hour, str_alarm_min;
 
     Intent data;
     
@@ -70,7 +70,8 @@ public class read extends AppCompatActivity{
             intent.putExtra("TITLE", str_title);
             intent.putExtra("CONTENT", str_content);
             intent.putExtra("ALARM_DATE", str_alarm_date);
-            intent.putExtra("ALARM_TIME", str_alarm_time);
+            intent.putExtra("HOUR", str_alarm_hour);
+            intent.putExtra("MIN", str_alarm_min);
 
             startActivity(intent);
             finish();
@@ -180,12 +181,18 @@ public class read extends AppCompatActivity{
                 str_title = item.getString("TITLE");
                 str_content = item.getString("CONTENT");
                 str_alarm_date = item.getString("ALARM_DATE");
-                str_alarm_time = item.getString("ALARM_TIME");
+                str_alarm_hour = item.getString("HOUR");
+                str_alarm_min = item.getString("MIN");
                 
                 TITLE.setText("제목 : " + item.getString("TITLE"));
                 CONTENT.setText(item.getString("CONTENT"));
                 ALARM_DATE.setText("알람 날짜 : " + item.getString("ALARM_DATE"));
-                ALARM_TIME.setText("시간 : " + item.getString("ALARM_TIME"));
+                if(str_alarm_hour.equals("null") && str_alarm_min.equals("null")){
+                    ALARM_TIME.setText("시간 : null");
+                } else {
+                    ALARM_TIME.setText("시간 : " + str_alarm_hour + ":" + str_alarm_min);
+                }
+
                 CREATE_DATE.setText("작성 날짜 : " + item.getString("CREATE_DATE"));
                 
             }

@@ -1,5 +1,7 @@
 package com.example.gwangtae.todo;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -28,26 +30,33 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import Adapter.SingerItem;
+import Service.Broadcast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    String id, title, content, date;
-
-    ListView list;
-
+    AlarmManager alarm_Manager;
     SingerAdapter adapter;
+
+    String id, title, content, date;
+    ListView list;
 
     // 방 목록
     String mJsonString;
     private static String TAG = "TODO";
 
+    Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        alarm_Manager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         list = (ListView) findViewById(R.id.list);
         adapter = new SingerAdapter();
@@ -232,17 +241,37 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showResult() {
+
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray("RESULT"); // 추가
+
+
+            PendingIntent[] pending_Intent = new PendingIntent[jsonArray.length()];
+
             adapter.items.clear();
             for (int i = 0; i < jsonArray.length(); i++) {
-
                 JSONObject item = jsonArray.getJSONObject(i);
 
                 adapter.addItem(new SingerItem(item.getString("NO"), item.getString("TITLE"), item.getString("CONTENT"), item.getString("CREATE_DATE"))); // 추가
+
                 adapter.notifyDataSetChanged();
                 list.setAdapter(adapter);
+
+                intent = new Intent(getApplicationContext(), Broadcast.class);
+
+
+                Calendar cal = new GregorianCalendar();
+                cal.setTimeInMillis(System.currentTimeMillis());
+                if(!item.getString("HOUR").equals("null") && !item.getString("MIN").equals("null")) {
+                    cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(item.getString("HOUR")));
+                    cal.set(Calendar.MINUTE, Integer.parseInt(item.getString("MIN")));
+                }
+
+                intent.putExtra("ALARM", "ON");
+
+                pending_Intent[i] = PendingIntent.getBroadcast(getApplicationContext(), i, intent, 0);
+                alarm_Manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pending_Intent[i]);
             }
         } catch (JSONException e) {
 

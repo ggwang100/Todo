@@ -30,10 +30,6 @@ public class MyService extends Service {
 
     myStartceHandler handler;
 
-    DBHelper helper;
-    SQLiteDatabase sqLiteDatabase;
-    Cursor cursor;
-
     Vibrator vibrator;
 
     MediaPlayer media_song;
@@ -42,14 +38,8 @@ public class MyService extends Service {
     String channelId = "channel";
     String channelName = "ChannelName";
 
-    Context context;
-
     public void onCreate() {
-        String sql = "select * from TODO";
 
-        helper = new DBHelper(this);
-        sqLiteDatabase = helper.getWritableDatabase();
-        cursor = sqLiteDatabase.rawQuery(sql, null);
     }
 
     @Override
@@ -159,44 +149,37 @@ public class MyService extends Service {
             Log.e("system date", Calendar.getInstance().get(Calendar.YEAR) + "-" + (Calendar.getInstance().get(Calendar.MONTH)+1) + "-" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
             Log.e("system date", Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":" + Calendar.getInstance().get(Calendar.MINUTE));
 
-            try{
-                if(cursor.getString(cursor.getColumnIndex("ALARM_DATE")).equals(Calendar.getInstance().get(Calendar.YEAR) + "-" + (Calendar.getInstance().get(Calendar.MONTH)+1) + "-" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH))){
-                    if(cursor.getString(cursor.getColumnIndex("ALARM_TIME")).equals(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":" + Calendar.getInstance().get(Calendar.MINUTE))){
-                        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-                        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+            NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+            vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            int importance = NotificationManager.IMPORTANCE_HIGH;
-                            NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
 
-                            notificationManager.createNotificationChannel(mChannel);
-                        }
-
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
-                        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-
-                        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                        int resquestID = (int)System.currentTimeMillis();
-
-                        PendingIntent pending_intent_main_activity = PendingIntent.getActivity(getApplicationContext(), resquestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                        builder.setContentTitle("ToDo 알림 안내")
-                                .setContentText("설정하신 시간대로 알람을 울립니다.")
-                                .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
-                                .setAutoCancel(true) // 알림 터치시 반응 후 삭제
-                                .setSmallIcon(android.R.drawable.btn_star)
-                                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.papers))
-                                .setBadgeIconType(R.drawable.papers)
-                                .setContentIntent(pending_intent_main_activity);
-
-                        notificationManager.notify(0, builder.build());
-
-                        vibrator.vibrate(new long[]{1000, 3000}, 0);
-                    }
-                    media_song.start();
-                }
-            } catch (Exception e){
+                notificationManager.createNotificationChannel(mChannel);
             }
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
+            Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            int resquestID = (int)System.currentTimeMillis();
+
+            PendingIntent pending_intent_main_activity = PendingIntent.getActivity(getApplicationContext(), resquestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            builder.setContentTitle("ToDo 알림 안내")
+                    .setContentText("설정하신 시간대로 알람을 울립니다.")
+                    .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
+                    .setAutoCancel(true) // 알림 터치시 반응 후 삭제
+                    .setSmallIcon(android.R.drawable.btn_star)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.papers))
+                    .setBadgeIconType(R.drawable.papers)
+                    .setContentIntent(pending_intent_main_activity);
+
+            notificationManager.notify(0, builder.build());
+
+            vibrator.vibrate(new long[]{1000, 3000}, 0);
+            media_song.start();
         }
     }
 
