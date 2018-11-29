@@ -28,6 +28,7 @@ public class edit_record extends AppCompatActivity {
     EditText edit_title, edit_content;
     TextView text_alarm_date, text_alarm_time;
     String ID, alarm_date, alarm_time, hour, min;
+    // String year, month, day;
     Intent mode;
 
     private static String TAG = "TODO";
@@ -76,6 +77,9 @@ public class edit_record extends AppCompatActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 //            String msg = String.format("%d-%d-%d", year,monthOfYear+1, dayOfMonth);
+            // year = String.valueOf(year);
+            // month = String.valueOf(monthOfYear+1);
+            // day = String.valueOf(dayOfMonth);
             alarm_date = year + "-" +( monthOfYear + 1)+ "-" + dayOfMonth;
             text_alarm_date.setText(alarm_date);
             // 1. 메인에서 YEAR, MONTH, DAY에서 현재 날짜를 가져온 후
@@ -114,23 +118,16 @@ public class edit_record extends AppCompatActivity {
             // 추가
             if (text_alarm_date.getText() == null && text_alarm_date.getText().length() == 0) {
                 insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), "", "", "");
+                // insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), "", "", "", "", "");
             } else {
                 insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, hour, min);
+                // insertTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/insert.php", edit_title.getText().toString(), edit_content.getText().toString(), year, month, day, hour, min);
             }
         }
         if (id == R.id.btn_update){
             UpdateTask updateTask = new UpdateTask();
             updateTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/update.php", edit_title.getText().toString(), edit_content.getText().toString(), alarm_date, hour, min, ID);
-//            Intent intent = new Intent();
-//
-//            intent.putExtra("TITLE", edit_title.getText().toString());
-//            intent.putExtra("CONTENT", edit_content.getText().toString());
-//            intent.putExtra("ALARM_DATE", text_alarm_date.getText());
-//            intent.putExtra("ALARM_TIME", text_alarm_time.getText());
-//            DBHelper dbHelper = new DBHelper(this);
-//            dbHelper.onUpdate(ID, edit_title.getText().toString(), edit_content.getText().toString(), text_alarm_date.getText().toString(), text_alarm_time.getText().toString());
-//            setResult(1, intent);
-//            finish();
+            // updateTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/update.php", edit_title.getText().toString(), edit_content.getText().toString(), year, month, day, hour, min, ID);
         }
     }
 
@@ -152,10 +149,16 @@ public class edit_record extends AppCompatActivity {
             String title = params[1];
             String content = params[2];
             String alarm_date = params[3];
+            // String year = params[3];
+            // String month = params[4];
+            // String day = params[5];
             String hour = params[4];
             String min = params[5];
+            // String hour = params[6];
+            // String min = params[7];
 
             String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE=" + alarm_date + "&HOUR=" + hour + "&MIN=" + min;
+            //String data = "TITLE=" + title + "&CONTENT=" + content + "&YEAR=" + year + "&MONTH=" + month + "&DAY=" + day + "&HOUR=" + hour + "&MIN=" + min;
 
             try {
                 URL url = new URL(serverURL);
@@ -239,12 +242,19 @@ public class edit_record extends AppCompatActivity {
             String title = params[1];
             String content = params[2];
             String alarm_date = params[3];
+            // String year = params[3];
+            // String month = params[4];
+            // String day = params[5];
             String hour = params[4];
             String min = params[5];
+            // String hour = params[6];
+            // String min = params[7];
             int ID = Integer.parseInt(params[6]);
+            // int ID = Integer.parseInt(params[8]);
 
             String data = "TITLE=" + title + "&CONTENT=" + content + "&ALARM_DATE=" + alarm_date + "&HOUR=" + hour +  "&MIN=" + min + "&ID=" + ID;
-
+            // String data = "TITLE=" + title + "&CONTENT=" + content + "&YEAR=" + year + "&MONTH=" + month + "&DAY=" + day + "&HOUR=" + hour +  "&MIN=" + min + "&ID=" + ID;
+            
             try {
                 URL url = new URL(serverURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
