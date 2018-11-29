@@ -198,7 +198,7 @@ public class read extends AppCompatActivity{
                 //if(str_alarm_year.equals("null") && str_alarm_month.equals("null") && str_alarm_day.equals("null")){
                 //    ALARM_DATE.setVisibility(View.GONE);
                 //} else {
-                //    ALARM_DATE.setText("시간 : " + str_alarm_year.equals("null") + "-" + str_alarm_month.equals("null") + "-" + str_alarm_day.equals("null"));
+                //    ALARM_DATE.setText(" : " + str_alarm_year + "-" + str_alarm_month + "-" + str_alarm_day);
                 //}
                 if(str_alarm_hour.equals("null") && str_alarm_min.equals("null")){
                     ALARM_TIME.setVisibility(View.GONE);
