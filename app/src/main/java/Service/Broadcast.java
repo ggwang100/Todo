@@ -14,6 +14,8 @@ public class Broadcast extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         if(intent.getExtras().getString("ALARM").equals("ON")){
+            Intent service_start = new Intent(context, MyService.class);
+            context.startService(service_start);
         } else {
             // 서비스 종료시 다시 부활하게 만듬
             if(intent.getAction().equals("android.intent.action.PACKAGE_RESTARTED")){
@@ -30,6 +32,7 @@ public class Broadcast extends BroadcastReceiver {
                 Intent i= new Intent(context, MainActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);
+                finish();
             }
         }
     }
