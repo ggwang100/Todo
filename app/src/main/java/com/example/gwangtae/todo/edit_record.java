@@ -73,6 +73,14 @@ public class edit_record extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
     private DatePickerDialog.OnDateSetListener date_listener = new DatePickerDialog.OnDateSetListener() { // 다이얼로그 선택했으면 해당 리스너를 불러올 수 있다.
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -217,8 +225,8 @@ public class edit_record extends AppCompatActivity {
                 // 인텐트 실패
             }
             else {
-                Intent intent = new Intent();
-                setResult(1, intent);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
                 finish();
             }
         }

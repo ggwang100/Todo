@@ -98,7 +98,8 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-            finish();
+            SelectTask selectTask = new SelectTask();
+            selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select.php");
         }
     }
 
@@ -155,7 +156,8 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.btn_add) {
             Intent record = new Intent(this, edit_record.class);
             record.putExtra("MODE", "RECORD");
-            startActivityForResult(record, 1000);
+            startActivity(record);
+            finish();
         }
     }
 
@@ -239,6 +241,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showResult() {
+        intent = new Intent(getApplicationContext(), Broadcast.class);
+
+        Calendar cal = Calendar.getInstance();
 
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
@@ -252,40 +257,32 @@ public class MainActivity extends AppCompatActivity
                 JSONObject item = jsonArray.getJSONObject(i);
 
                 adapter.addItem(new SingerItem(item.getString("NO"), item.getString("TITLE"), item.getString("CONTENT"), item.getString("CREATE_DATE"))); // 추가
+
+                if(!item.getString("HOUR").equals("null") && !item.getString("MIN").equals("null")) {
+
+                    // cal.set(Calendar.YEAR, Integer.parseInt(item.getString("YEAR")));
+                    // cal.set(Calendar.MONTH, Integer.parseInt(item.getString("MONTH")));
+                    // cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(item.getString("DAY")));
+                    cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(item.getString("HOUR")));
+                    cal.set(Calendar.MINUTE, Integer.parseInt(item.getString("MIN")));
+
+//                    intent.putExtra("ALARM", "ON");
+
+                    pending_Intent[i] = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    alarm_Manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pending_Intent[i]);
+                }
+
                 // MySQL 칼람명 수정 필요
                 // adapter.addItem(new SingerItem(item.getString("NO"), item.getString("TITLE"), item.getString("CONTENT"), item.getString("YEAR") + "-" + item.getString("MONTH") + "-" + item.getString("DAY"))); // 추가
                 adapter.notifyDataSetChanged();
                 list.setAdapter(adapter);
                 
                 // 시간 분이 둘 다 null이 아닐 때
-                if(!item.getString("HOUR").equals("null") && !item.getString("MIN").equals("null")) {
-                    intent = new Intent(getApplicationContext(), Broadcast.class);
-                    
-                    Calendar cal = Calendar.getInstance();
-                    // cal.set(Calendar.YEAR, Integer.parseInt(item.getString("YEAR")));
-                    // cal.set(Calendar.MONTH, Integer.parseInt(item.getString("MONTH")));
-                    // cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(item.getString("DAY")));
-                    cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(item.getString("HOUR")));
-                    cal.set(Calendar.MINUTE, Integer.parseInt(item.getString("MIN")));
-                    
-                    intent.putExtra("ALARM", "ON");
 
-                    pending_Intent[i] = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    alarm_Manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pending_Intent[i]);
-                }
             }
         } catch (JSONException e) {
 
             Log.d(TAG, "showResult : ", e);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1000 && resultCode == 1) {
-            SelectTask selectTask = new SelectTask();
-            selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select.php");
         }
     }
 }
