@@ -67,7 +67,9 @@ public class MyService extends Service {
         PendingIntent pending_intent_main_activity = PendingIntent.getActivity(getApplicationContext(), resquestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         builder.setContentTitle("ToDo 알림 안내")
+//         builder.setContentTitle(intent.getExtras().getString("todo_title"))
                 .setContentText("설정하신 시간대로 알람을 울립니다.")
+//                 .setContentText(intent.getExtras().getString("todo_content"))
                 .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
                 .setAutoCancel(true) // 알림 터치시 반응 후 삭제
                 .setSmallIcon(android.R.drawable.btn_star)
