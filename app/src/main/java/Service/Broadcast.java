@@ -16,10 +16,13 @@ public class Broadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-//        if(intent.getExtras().getString("ALARM").equals("alarm on")){
+//         if(intent.getExtras().getString("alarm_mode").equals("ON")){
             Intent service_start = new Intent(context, MyService.class);
+//             service_start.putExtra("todo_title", intent.getExtras().getString("TITLE"));
+//             service_start.putExtra("todo_content", intent.getExtras().getString("CONTENT"));
             context.startForegroundService(service_start);
-//        } else {
+//         } 
+//       else {
 //            // 서비스 종료시 다시 부활하게 만듬
 //            if(intent.getAction().equals("android.intent.action.PACKAGE_RESTARTED")){
 //
