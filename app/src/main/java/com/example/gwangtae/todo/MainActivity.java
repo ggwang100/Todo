@@ -252,7 +252,8 @@ public class MainActivity extends AppCompatActivity
                 JSONObject item = jsonArray.getJSONObject(i);
 
                 adapter.addItem(new SingerItem(item.getString("NO"), item.getString("TITLE"), item.getString("CONTENT"), item.getString("CREATE_DATE"))); // 추가
-
+                // MySQL 칼람명 수정 필요
+                // adapter.addItem(new SingerItem(item.getString("NO"), item.getString("TITLE"), item.getString("CONTENT"), item.getString("YEAR") + "-" + item.getString("MONTH") + "-" + item.getString("DAY"))); // 추가
                 adapter.notifyDataSetChanged();
                 list.setAdapter(adapter);
                 
@@ -262,6 +263,9 @@ public class MainActivity extends AppCompatActivity
                     
                     Calendar cal = new GregorianCalendar();
                     cal.setTimeInMillis(System.currentTimeMillis());
+                    // cal.set(Calendar.YEAR, Integer.parseInt(item.getString("YEAR")));
+                    // cal.set(Calendar.MONTH, Integer.parseInt(item.getString("MONTH")));
+                    // cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(item.getString("DAY")));
                     cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(item.getString("HOUR")));
                     cal.set(Calendar.MINUTE, Integer.parseInt(item.getString("MIN")));
                     
