@@ -27,20 +27,15 @@ import java.util.Calendar;
 import DB.DBHelper;
 
 public class MyService extends Service {
-
-    myStartceHandler handler;
-
+    
+    // 진동 설정
     Vibrator vibrator;
-
+    
+    // 음악 설정
     MediaPlayer media_song;
-    boolean isRunning;
 
     String channelId = "channel";
     String channelName = "ChannelName";
-
-    public void onCreate() {
-
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -53,9 +48,37 @@ public class MyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         media_song = MediaPlayer.create(this, R.raw.music);
 
-        handler = new myStartceHandler();
-        mThread thread = new mThread(handler);
-        thread.start();
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
+
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        int resquestID = (int)System.currentTimeMillis();
+
+        PendingIntent pending_intent_main_activity = PendingIntent.getActivity(getApplicationContext(), resquestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder.setContentTitle("ToDo 알림 안내")
+                .setContentText("설정하신 시간대로 알람을 울립니다.")
+                .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
+                .setAutoCancel(true) // 알림 터치시 반응 후 삭제
+                .setSmallIcon(android.R.drawable.btn_star)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.papers))
+                .setBadgeIconType(R.drawable.papers)
+                .setContentIntent(pending_intent_main_activity);
+
+        notificationManager.notify(0, builder.build());
+
+        vibrator.vibrate(new long[]{1000, 3000}, 0);
+        media_song.start();
 
         //시작 ID 0또는 1
 //        assert state != null;
@@ -138,76 +161,7 @@ public class MyService extends Service {
         Log.e("on Destroy called", "ta da");
 
         super.onDestroy();
-        this.isRunning = false;
 
         //Toast.makeText(this, "on Destroy called", Toast.LENGTH_SHORT).show();
-    }
-
-    class myStartceHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            Log.e("system date", Calendar.getInstance().get(Calendar.YEAR) + "-" + (Calendar.getInstance().get(Calendar.MONTH)+1) + "-" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-            Log.e("system date", Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":" + Calendar.getInstance().get(Calendar.MINUTE));
-
-            NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-            vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                int importance = NotificationManager.IMPORTANCE_HIGH;
-                NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
-
-                notificationManager.createNotificationChannel(mChannel);
-            }
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
-            Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            int resquestID = (int)System.currentTimeMillis();
-
-            PendingIntent pending_intent_main_activity = PendingIntent.getActivity(getApplicationContext(), resquestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            builder.setContentTitle("ToDo 알림 안내")
-                    .setContentText("설정하신 시간대로 알람을 울립니다.")
-                    .setDefaults(Notification.DEFAULT_ALL) // 알림, 사운드 진동 설정
-                    .setAutoCancel(true) // 알림 터치시 반응 후 삭제
-                    .setSmallIcon(android.R.drawable.btn_star)
-                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.papers))
-                    .setBadgeIconType(R.drawable.papers)
-                    .setContentIntent(pending_intent_main_activity);
-
-            notificationManager.notify(0, builder.build());
-
-            vibrator.vibrate(new long[]{1000, 3000}, 0);
-            media_song.start();
-        }
-    }
-
-    class mThread extends Thread {
-
-        Handler handler;
-        boolean isRun = true;
-
-        public mThread(Handler handler){
-            this.handler = handler;
-        }
-
-        public void stopForever(){
-            synchronized (this) {
-                this.isRun = false;
-            }
-        }
-
-        @Override
-        public void run() {
-            while(isRun){
-                handler.sendEmptyMessage(0);
-                try{
-                    Thread.sleep(10000);
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }
