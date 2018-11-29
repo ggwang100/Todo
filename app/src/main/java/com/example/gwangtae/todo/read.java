@@ -28,6 +28,7 @@ public class read extends AppCompatActivity{
 
     TextView TITLE, CONTENT, ALARM_DATE, CREATE_DATE, ALARM_TIME;
     String str_title, str_content, str_alarm_date, str_alarm_hour, str_alarm_min;
+    // String str_alarm_hour, str_alarm_month, str_alarm_day;
 
     Intent data;
     
@@ -181,6 +182,9 @@ public class read extends AppCompatActivity{
                 str_title = item.getString("TITLE");
                 str_content = item.getString("CONTENT");
                 str_alarm_date = item.getString("ALARM_DATE");
+                // str_alarm_year = item.getString("YEAR");
+                // str_alarm_month = item.getString("MONTH");
+                // str_alarm_day = item.getString("DAY");
                 str_alarm_hour = item.getString("HOUR");
                 str_alarm_min = item.getString("MIN");
                 
@@ -191,6 +195,11 @@ public class read extends AppCompatActivity{
                 } else {
                     ALARM_DATE.setText("시간 : " + str_alarm_date);
                 }
+                //if(str_alarm_year.equals("null") && str_alarm_month.equals("null") && str_alarm_day.equals("null")){
+                //    ALARM_DATE.setVisibility(View.GONE);
+                //} else {
+                //    ALARM_DATE.setText("시간 : " + str_alarm_year.equals("null") + "-" + str_alarm_month.equals("null") + "-" + str_alarm_day.equals("null"));
+                //}
                 if(str_alarm_hour.equals("null") && str_alarm_min.equals("null")){
                     ALARM_TIME.setVisibility(View.GONE);
                 } else {
