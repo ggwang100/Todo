@@ -18,8 +18,8 @@ public class Broadcast extends BroadcastReceiver {
 
 //         if(intent.getExtras().getString("alarm_mode").equals("ON")){
             Intent service_start = new Intent(context, MyService.class);
-//             service_start.putExtra("todo_title", intent.getExtras().getString("TITLE"));
-//             service_start.putExtra("todo_content", intent.getExtras().getString("CONTENT"));
+//             service_start.putExtra("todo_title", intent.getExtras().getString("todo_title"));
+//             service_start.putExtra("todo_content", intent.getExtras().getString("todo_content"));
             context.startForegroundService(service_start);
 //         } 
 //       else {
