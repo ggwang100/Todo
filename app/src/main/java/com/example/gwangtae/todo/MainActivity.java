@@ -265,8 +265,11 @@ public class MainActivity extends AppCompatActivity
                     // cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(item.getString("DAY")));
                     cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(item.getString("HOUR")));
                     cal.set(Calendar.MINUTE, Integer.parseInt(item.getString("MIN")));
+                    
+//                    intent.putExtra("alarm_mode", item.getString("ON"));
+//                    intent.putExtra("todo_title", item.getString("TITLE"));
+//                    intent.putExtra("todo_content", item.getString("CONTENT"));
 
-//                    intent.putExtra("ALARM", "ON");
 
                     pending_Intent[i] = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     alarm_Manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pending_Intent[i]);
