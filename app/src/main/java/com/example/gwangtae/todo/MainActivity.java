@@ -261,8 +261,7 @@ public class MainActivity extends AppCompatActivity
                 if(!item.getString("HOUR").equals("null") && !item.getString("MIN").equals("null")) {
                     intent = new Intent(getApplicationContext(), Broadcast.class);
                     
-                    Calendar cal = new GregorianCalendar();
-                    cal.setTimeInMillis(System.currentTimeMillis());
+                    Calendar cal = Calendar.getInstance();
                     // cal.set(Calendar.YEAR, Integer.parseInt(item.getString("YEAR")));
                     // cal.set(Calendar.MONTH, Integer.parseInt(item.getString("MONTH")));
                     // cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(item.getString("DAY")));
@@ -271,7 +270,7 @@ public class MainActivity extends AppCompatActivity
                     
                     intent.putExtra("ALARM", "ON");
 
-                    pending_Intent[i] = PendingIntent.getBroadcast(getApplicationContext(), i, intent, 0);
+                    pending_Intent[i] = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     alarm_Manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pending_Intent[i]);
                 }
             }
