@@ -36,6 +36,8 @@ public class MyService extends Service {
 
     String channelId = "channel";
     String channelName = "ChannelName";
+    
+    Calendar cal;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -165,5 +167,17 @@ public class MyService extends Service {
         super.onDestroy();
 
         //Toast.makeText(this, "on Destroy called", Toast.LENGTH_SHORT).show();
+    }
+    
+    class myStartceHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            cal = Calendar.getInstance();
+            
+            cal.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+            cal.set(Calendar.MINUTE, Calendar.getInstance().get(Calendar.MINUTE));
+
+            log.e("RTC", String.valueOf(cal.getTimeInMillis()));
+        }
     }
 }
