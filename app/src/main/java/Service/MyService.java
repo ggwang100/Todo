@@ -38,6 +38,8 @@ public class MyService extends Service {
     String channelName = "ChannelName";
     
     Calendar cal;
+    
+    int hour, min;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -49,6 +51,12 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         media_song = MediaPlayer.create(this, R.raw.music);
+        
+        handler = new myStartceHandler();
+        mThread thread = new mThread(handler);
+        thread.start();
+        
+        // 현재 시간 == 알람 시간 비교해서 일치하면 알람 발생
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -62,6 +70,9 @@ public class MyService extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+//         Intent notificationIntent = new Intent(getApplicationContext(), edit_record.class);
+//         notificationIntent.putExtra("NO", intent.getExtras().getString("NO"));
+//         notificationIntent.putExtra("TITLE", intent.getExtras().getString("todo_title"));
 
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         int resquestID = (int)System.currentTimeMillis();
@@ -174,10 +185,40 @@ public class MyService extends Service {
         public void handleMessage(Message msg) {
             cal = Calendar.getInstance();
             
-            cal.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
-            cal.set(Calendar.MINUTE, Calendar.getInstance().get(Calendar.MINUTE));
+            hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+            min = Calendar.getInstance().get(Calendar.MINUTE);
+            
+            cal.set(Calendar.HOUR_OF_DAY, hour);
+            cal.set(Calendar.MINUTE, min);
 
             log.e("RTC", String.valueOf(cal.getTimeInMillis()));
+        }
+    }
+
+    class mThread extends Thread {
+        Handler handler;
+        boolean isRun = true;
+        
+        public mThread(Handler handler){
+            this.handler = handler;
+        }
+        
+        public void stopForever(){
+            synchronized (this) {
+                this.isRun = false;
+            }
+        }
+        
+        @Override
+        public void run() {
+            while(isRun){
+                handler.sendEmptyMessage(0);                            
+                try{
+                    Thread.sleep(1000);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
