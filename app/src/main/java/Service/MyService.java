@@ -28,6 +28,8 @@ import DB.DBHelper;
 
 public class MyService extends Service {
     
+    myStartceHandler handler;
+    
     // 진동 설정
     Vibrator vibrator;
     
@@ -52,9 +54,9 @@ public class MyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         media_song = MediaPlayer.create(this, R.raw.music);
         
-//         handler = new myStartceHandler();
-//         mThread thread = new mThread(handler);
-//         thread.start();
+        handler = new myStartceHandler();
+        mThread thread = new mThread(handler);
+        thread.start();
         
         log.e("RTC", String.valueOf(cal.getTimeInMillis()));
         
