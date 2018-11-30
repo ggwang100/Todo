@@ -269,6 +269,8 @@ public class MainActivity extends AppCompatActivity
 //                    intent.putExtra("alarm_mode", item.getString("ON"));
 //                    intent.putExtra("todo_title", item.getString("TITLE"));
 //                    intent.putExtra("todo_content", item.getString("CONTENT"));
+//                    intent.putExtra("todo_title", item.getString("HOUR"));
+//                    intent.putExtra("todo_content", item.getString("MIN"));
 
 
                     pending_Intent[i] = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);
