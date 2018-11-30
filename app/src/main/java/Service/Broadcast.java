@@ -20,8 +20,7 @@ public class Broadcast extends BroadcastReceiver {
             Intent service_start = new Intent(context, MyService.class);
 //             service_start.putExtra("todo_title", intent.getExtras().getString("todo_title"));
 //             service_start.putExtra("todo_content", intent.getExtras().getString("todo_content"));
-//             service_start.putExtra("todo_hour", intent.getExtras().getString("todo_hour"));
-//             service_start.putExtra("todo_min", intent.getExtras().getString("todo_min"));
+//             service_start.putExtra("todo_alarm", intent.getExtras().getString("todo_alarm"));
             context.startForegroundService(service_start);
 //         } 
 //       else {
