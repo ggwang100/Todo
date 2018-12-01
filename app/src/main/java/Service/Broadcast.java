@@ -12,16 +12,22 @@ import com.example.gwangtae.todo.MainActivity;
 
 public class Broadcast extends BroadcastReceiver {
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onReceive(Context context, Intent intent) {
 
 //         if(intent.getExtras().getString("alarm_mode").equals("ON")){
             Intent service_start = new Intent(context, MyService.class);
-//             service_start.putExtra("todo_title", intent.getExtras().getString("todo_title"));
-//             service_start.putExtra("todo_content", intent.getExtras().getString("todo_content"));
-//             service_start.putExtra("todo_alarm", intent.getExtras().getString("todo_alarm"));
-            context.startForegroundService(service_start);
+            service_start.putExtra("todo_no", intent.getExtras().getString("todo_no"));
+            service_start.putExtra("todo_title", intent.getExtras().getString("todo_title"));
+            service_start.putExtra("todo_content", intent.getExtras().getString("todo_content"));
+//            service_start.putExtra("todo_alarm", intent.getExtras().getString("todo_alarm"));
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+                Log.e("Oreo", "오레오 스타트");
+                context.startForegroundService(service_start);
+            }else{
+                context.startService(service_start);
+            }
 //         } 
 //       else {
 //            // 서비스 종료시 다시 부활하게 만듬

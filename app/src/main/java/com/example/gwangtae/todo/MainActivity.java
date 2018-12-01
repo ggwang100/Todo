@@ -266,10 +266,10 @@ public class MainActivity extends AppCompatActivity
                     cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(item.getString("HOUR")));
                     cal.set(Calendar.MINUTE, Integer.parseInt(item.getString("MIN")));
                     
-//                    intent.putExtra("alarm_mode", item.getString("ON"));
-//                    intent.putExtra("todo_title", item.getString("TITLE"));
-//                    intent.putExtra("todo_content", item.getString("CONTENT"));
-//                    intent.putExtra("todo_alarm", String.valueOf(cal.getTimeInMillis()));
+                    intent.putExtra("todo_no", item.getString("NO"));
+                    intent.putExtra("todo_title", item.getString("TITLE"));
+                    intent.putExtra("todo_content", item.getString("CONTENT"));
+                    intent.putExtra("todo_alarm", String.valueOf(cal.getTimeInMillis()));
 
 
                     pending_Intent[i] = PendingIntent.getBroadcast(MainActivity.this, i, intent, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -53,8 +53,6 @@ public class read extends AppCompatActivity{
         SelectTask selectTask = new SelectTask();
         selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select_title.php", data.getStringExtra("TITLE"), data.getStringExtra("ID"));
 
-
-
        if(ALARM_DATE.getText().equals("null") && ALARM_TIME.getText().equals("null")){
            ALARM_DATE.setVisibility(View.GONE);
             ALARM_TIME.setVisibility(View.GONE);
