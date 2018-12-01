@@ -98,8 +98,7 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-            SelectTask selectTask = new SelectTask();
-            selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select.php");
+            finish();
         }
     }
 
@@ -269,6 +268,7 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra("todo_no", item.getString("NO"));
                     intent.putExtra("todo_title", item.getString("TITLE"));
                     intent.putExtra("todo_content", item.getString("CONTENT"));
+                    intent.putExtra("extra", "alarm on");
                     intent.putExtra("todo_alarm", String.valueOf(cal.getTimeInMillis()));
 
 

@@ -20,6 +20,7 @@ public class Broadcast extends BroadcastReceiver {
             service_start.putExtra("todo_no", intent.getExtras().getString("todo_no"));
             service_start.putExtra("todo_title", intent.getExtras().getString("todo_title"));
             service_start.putExtra("todo_content", intent.getExtras().getString("todo_content"));
+            service_start.putExtra("extra", intent.getExtras().getString("extra"));
 //            service_start.putExtra("todo_alarm", intent.getExtras().getString("todo_alarm"));
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){

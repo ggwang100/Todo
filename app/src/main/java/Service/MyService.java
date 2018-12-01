@@ -38,7 +38,10 @@ public class MyService extends Service {
 
     String channelId = "channel";
     String channelName = "ChannelName";
-    
+
+    int startId;
+    boolean isRunning;
+
     Calendar cal;
     
     int hour, min;
@@ -52,7 +55,7 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        media_song = MediaPlayer.create(this, R.raw.music);
+        String state = intent.getExtras().getString("extra");
         
         handler = new myStartceHandler();
         mThread thread = new mThread(handler);
@@ -62,93 +65,69 @@ public class MyService extends Service {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
             alarm_start();
             startForeground(1, builder.build());
-
-            vibrator.vibrate(new long[]{1000, 3000}, 0);
-            media_song.start();
         }else{
             alarm_start();
             notificationManager.notify(0, builder.build());
+        }
+
+        assert state != null;
+        switch (state) {
+            case "alarm on":
+                startId = 1;
+                Log.e("Start ID is", state);
+                Log.e("Start ID is", "ID" + startId);
+                break;
+            case "alarm off":
+                startId = 0;
+                Log.e("Start ID is", state);
+                Log.e("Start ID is", "ID" + startId);
+                break;
+            default:
+                startId = 0;
+                break;
+        }
+
+        if(!this.isRunning && startId == 1){
+            Log.e("there is no music", "and you wand start");
+            media_song = MediaPlayer.create(this, R.raw.music);
+            vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
             vibrator.vibrate(new long[]{1000, 3000}, 0);
             media_song.start();
+
+            this.isRunning = true;
+            this.startId = 0;
         }
-        
-        // 현재 시간 == 알람 시간 비교해서 일치하면 알람 발생
-//        if(cal.getTimeInMillis() == Integer.parseInt(intent.getExtras().getString("todo_alarm"))){
-//        }
-        
-        //시작 ID 0또는 1
-//        assert state != null;
-//        switch (state) {
-//            case "alarm on":
-//                startId = 1;
-//                Log.e("Start ID is", state);
-//                break;
-//            case "alarm off":
-//                startId = 0;
-//                Log.e("Start ID is", state);
-//                break;
-//            default:
-//                startId = 0;
-//                break;
-//        }
-//
-//
-//
-//        //if else statements
-//
-//        // if there is no music playing, and the user pressed "alarm on"
-//        // music should start playing
-//        if(!this.isRunning && startId == 1){
-//            Log.e("there is no music", "and you wand start");
-//
-//            media_song = MediaPlayer.create(this, R.raw.music);
-//            media_song.start();
-//
-//            this.isRunning = true;
-//            this.startId = 0;
-//        }
-//
-//        // if there is music playing, and the user pressed "alarm off"
-//        // music should stop playing
-//        else if(this.isRunning && startId == 0){
-//            Log.e("there is music", "and you wand end");
-//
-//            media_song.stop();
-//            media_song.reset();
-//
-//            this.isRunning = false;
-//            this.startId = 0;
-//        }
-//
-//        // there are if the user random buttons
-//        // just to bug-prof the app
-//        // if there is no music playing, and the user pressed "alarm off"
-//        // do nothing
-//        else if(!this.isRunning && startId == 0){
-//            Log.e("there is no music", "and you wand end");
-//
-//
-//            this.isRunning = false;
-//            this.startId = 0;
-//        }
-//
-//        // if there is music playing and the user pressed "alarm on"
-//        // do nothing
-//        else if(this.isRunning && startId == 1){
-//            Log.e("there is music", "and you wand start");
-//
-//            this.isRunning = true;
-//            this.startId = 1;
-//        }
-//
-//        // can't think of anything else, just to catch the odd event
-//        else{
-//            Log.e("else", "somehow you reached this");
-//
-//        }
+
+        else if(this.isRunning && startId == 0){
+            Log.e("there is music", "and you wand end");
+
+            vibrator.cancel();
+            media_song.stop();
+            media_song.reset();
+
+           this.isRunning = false;
+            this.startId = 0;
+        }
+
+        else if(!this.isRunning && startId == 0){
+            Log.e("there is no music", "and you wand end");
 
 
+            this.isRunning = false;
+            this.startId = 0;
+        }
+
+        else if(this.isRunning && startId == 1){
+            Log.e("there is music", "and you wand start");
+
+            this.isRunning = true;
+            this.startId = 1;
+        }
+
+        else{
+            Log.e("else", "somehow you reached this");
+        }
 
         return START_STICKY;
     }
@@ -159,12 +138,12 @@ public class MyService extends Service {
 
         super.onDestroy();
 
-        //Toast.makeText(this, "on Destroy called", Toast.LENGTH_SHORT).show();
+        this.isRunning = false;
     }
     
     public void alarm_start(){
         notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;

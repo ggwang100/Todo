@@ -2,8 +2,10 @@ package com.example.gwangtae.todo;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -24,13 +26,15 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import Service.Broadcast;
+
 public class read extends AppCompatActivity{
 
     TextView TITLE, CONTENT, ALARM_DATE, CREATE_DATE, ALARM_TIME;
     String str_title, str_content, str_alarm_date, str_alarm_hour, str_alarm_min;
     // String str_alarm_hour, str_alarm_month, str_alarm_day;
 
-    Intent data;
+    Intent data, music_stop;
     
     String mJsonString;
 
@@ -42,6 +46,7 @@ public class read extends AppCompatActivity{
         setContentView(R.layout.read);
 
         data = getIntent();
+        music_stop = new Intent(this, Broadcast.class);
 
         TITLE = (TextView) findViewById(R.id.text_title);
         CONTENT = (TextView) findViewById(R.id.text_content);
@@ -49,9 +54,11 @@ public class read extends AppCompatActivity{
         ALARM_TIME = (TextView) findViewById(R.id.text_alarm_time);
         CREATE_DATE = (TextView) findViewById(R.id.text_date);
 
-
         SelectTask selectTask = new SelectTask();
         selectTask.execute("http://eungho77.ipdisk.co.kr:8000/TODO/select_title.php", data.getStringExtra("TITLE"), data.getStringExtra("ID"));
+
+        music_stop.putExtra("extra", "alarm off");
+        sendBroadcast(music_stop);
 
        if(ALARM_DATE.getText().equals("null") && ALARM_TIME.getText().equals("null")){
            ALARM_DATE.setVisibility(View.GONE);
